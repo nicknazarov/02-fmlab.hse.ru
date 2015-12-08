@@ -1,0 +1,323 @@
+---
+title: "Моментум-стратегии и reality check (ТЗ 29.07.2015)"
+output:
+  html_document
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+setwd("/home/nazarov/Рабочий стол/fmlab.hse.ru/ТЗ до 29.07.2015/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+source("reality_func.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("stocks_52.xlsx"),sheet=1)
+
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+# перебор от 1 до 12 мес , ждем от 0 до 8 недель, держим от 1 до 12 мес
+# Периоды отбора (в месяцах), удержания (в неделях), инвестирования (в месяцах)
+UP1=12
+UP2=8
+UP3=12
+STEP=1
+# N - с учетом отступа
+N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+########################Константы для reality check
+R <- 1
+
+#T <- 164    
+T <- 74
+N_rc <- 500
+Q <- 0.1  
+
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+ <p>
+ <br />
+ </p>  
+
+####**Таблица 1. Исследуемые компании ** 
+```{r, echo=FALSE, results='asis'}
+#>Тикеры исследуемых ксмпаний: **`r colnames(resultDataFull)`**
+
+comp.table<- readWorksheet(loadWorkbook("компании.xlsx"),sheet=1)
+comp.table[,7]<-round(as.numeric(comp.table[,7]),2)
+comp.table[,6]<-round(as.numeric(comp.table[,6]),2)
+comp.table[,5]<-round(as.numeric(comp.table[,5]),2)
+datatable(comp.table[,-8],options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, nrow(comp.table))) ) 
+```
+
+<p>
+<br />
+<br />
+</p>  
+
+>Период отслеживания менялся от **1** до **`r UP1`** месяцев
+
+>Период ожидания менялся от **0** до **`r UP2`** недель
+
+>Период инвестирования менялся от **1** до **`r UP3`** месяцев
+
+<p>
+<br />
+<br />
+</p>  
+
+## 1. Моментум стратегии при равных весах. Ранжирование по средней доходности (бенчмарк 6% годовых - только для reality check)
+
+<p>
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("tz_29_v1(Q=0.1).RDS") # читаем из файла что там есть 
+V_star <- mylist[[4]]
+V_bar <- mylist[[3]]
+result.data <- mylist[[1]]
+
+ret_p <- c(V_star,V_bar)
+boot.pvalue <- 1-(rank(ret_p, ties.method = "first")[501]-1)/500
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+
+####**Таблица 2. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data,6),options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+
+sort.table <- result.data[order(-result.data[,1]),] 
+p1 <- sort.table[1,4]/4
+p2 <- sort.table[1,5]
+p3 <- sort.table[1,6]/4
+perc<- sort.table[1,7]
+  
+  
+```
+
+>Лучшая по средней доходности стратегия дает среднемесячную доходность **`r round(sort.table[1,1]*100,2)`** **%** и имеет параметры:
+>период отбора -- **`r p1`** месяцев,  период ожидания -- **`r p2`** недель, период инвестирования -- **`r p3`** месяцев,  процентиль -- **`r perc`** 
+
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+best.strat <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+neg.fold<-best.strat[best.strat<0]
+```
+>Bootstrap p-value равен  **`r boot.pvalue`**
+
+
+<p>
+<br />
+</p> 
+
+>Всего портфелей у лучшей стратегии -- **`r length(best.strat)`** 
+>Количество отрицательных доходностей у лучшей стратегии -- **`r length(neg.fold)`** ( **`r round(length(neg.fold)/length(best.strat)*100,2)`%** )
+ 
+<p>
+<br />
+</p>  
+
+####**Рисунок 1. ** 
+
+```{r, echo=FALSE}
+
+hist(best.strat*100,50,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей лучшей стратегии",ylim = c(0, 20))
+
+```
+
+<p>
+<br /> 
+</p>  
+  
+
+
+####**Рисунок 2. (вертикальные пунктирные линии - начало нового года) ** 
+
+
+
+```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
+
+winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+x<-as.Date(names(winner))
+data.plot2 <- data.frame(date=x,winner=winner,loser=loser,delta=winner-loser)
+
+
+ggplot(data.plot2, aes(x))  +
+  geom_line(aes(y = winner, colour = "winner"),size=2) + 
+  geom_line(aes(y = loser, colour = "loser"),size=2)+ theme(axis.text.x = element_text(angle = 60, hjust =1,size=17, face="bold"),
+  axis.text.y = element_text(size=25,face="bold") ,axis.title=element_text(size=25,face="bold"),plot.title = element_text(color="blue", size=34, face="bold"))+ 
+  scale_x_date(labels = date_format("%d/%m/%y"),breaks = date_breaks("1 week"))  + 
+  labs(title ="Доходности победителей и проигравших для лучшей стратегии", x = "Даты", y = "Среднемесячная доходность" ) + 
+  scale_y_continuous()+   geom_vline(xintercept= as.numeric(c(as.Date("2013-01-01"),as.Date("2014-01-01")) ), linetype=6, colour="black",size=2 )
+
+```
+<p>
+<br />
+<br />
+</p>  
+
+####**Таблица 3. Доходности победителей и проигравших для лучшей стратегии** 
+```{r, echo=FALSE, results='asis'}
+row.names(data.plot2)<-1:nrow(data.plot2)
+data.plot2[,2]<-round(data.plot2[,2],4)
+data.plot2[,3]<-round(data.plot2[,3],4)
+data.plot2[,4]<-round(data.plot2[,4],4)
+datatable(data.plot2,options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, nrow(data.plot2))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+
+
+## 2.  Моментум стратегии при равных весах. Ранжирование по t-статистике (бенчмарк 6% годовых - только для reality check)
+
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+
+sort.table <- result.data[order(-result.data[,2]),] 
+p1 <- sort.table[1,4]/4
+p2 <- sort.table[1,5]
+p3 <- sort.table[1,6]/4
+perc<- sort.table[1,7]
+  
+  
+```
+
+>Лучшая по t-статистике стратегия дает среднемесячную доходность  **`r round(sort.table[1,1]*100,2)`** **%**  и имеет параметры:
+>период отбора -- **`r p1`** месяцев,  период ожидания -- **`r p2`** недель, период инвестирования -- **`r p3`** месяцев,  процентиль -- **`r perc`** 
+
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+best.strat <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+neg.fold<-best.strat[best.strat<0]
+```
+
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("tz_29_v1(Q=0.1) sharp.RDS") # читаем из файла что там есть 
+V_star <- mylist[[4]]
+V_bar <- mylist[[3]]
+result.data <- mylist[[1]]
+
+ret_p <- c(V_star,V_bar)
+boot.pvalue <- 1-(rank(ret_p, ties.method = "first")[501]-1)/500
+
+
+```
+
+>Bootstrap p-value равен  **`r boot.pvalue`**
+
+
+<p>
+<br />
+</p> 
+
+>Всего портфелей у лучшей по t-статистике стратегии -- **`r length(best.strat)`** 
+>Количество отрицательных доходностей у лучшей по t-статистике стратегии -- **`r length(neg.fold)`** ( **`r round(length(neg.fold)/length(best.strat)*100,2)`%** )
+ 
+<p>
+<br />
+</p>  
+
+####**Рисунок 3. ** 
+
+
+```{r, echo=FALSE}
+
+hist(best.strat*100,50,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение доходностей лучшей по t-stat стратегии",ylim = c(0, 20))
+
+```
+
+<p>
+<br /> 
+</p>  
+  
+
+
+####**Рисунок 4. (вертикальные пунктирные линии - начало нового года) ** 
+
+
+
+```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
+
+winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+x<-as.Date(names(winner))
+data.plot2 <- data.frame(date=x,winner=winner,loser=loser,delta=winner-loser)
+
+
+ggplot(data.plot2, aes(x))  +
+  geom_line(aes(y = winner, colour = "winner"),size=2) + 
+  geom_line(aes(y = loser, colour = "loser"),size=2)+ theme(axis.text.x = element_text(angle = 60, hjust =1,size=17, face="bold"),
+  axis.text.y = element_text(size=25,face="bold") ,axis.title=element_text(size=25,face="bold"),plot.title = element_text(color="blue", size=34, face="bold"))+ 
+  scale_x_date(labels = date_format("%d/%m/%y"),breaks = date_breaks("1 week"))  + 
+  labs(title ="Доходности победителей и проигравших для лучшей стратегии", x = "Даты", y = "Среднемесячная доходность" ) + 
+  scale_y_continuous()+   geom_vline(xintercept= as.numeric(c(as.Date("2013-01-01"),as.Date("2014-01-01")) ), linetype=6, colour="black",size=2 )
+
+```
+<p>
+<br />
+<br />
+</p>  
+
+####**Таблица 4. Доходности победителей и проигравших для лучшей стратегии** 
+```{r, echo=FALSE, results='asis'}
+row.names(data.plot2)<-1:nrow(data.plot2)
+data.plot2[,2]<-round(data.plot2[,2],4)
+data.plot2[,3]<-round(data.plot2[,3],4)
+data.plot2[,4]<-round(data.plot2[,4],4)
+datatable(data.plot2,options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, nrow(data.plot2))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+
+## 3. Моментум стратегии при равных весах. Ранжирование по средней доходности (лучшие против индекса ММВБ)
+  
+<p>
+<br /> 
+</p>   
+
+
+
+<p> 
+<br /> 
+<br /> 
+</p>  
+
+## 4.  Моментум стратегии при равных весах. Ранжирование по средней доходности (бенчмарк 6% годовых) для компаний с максимальной рыночной капитализацией

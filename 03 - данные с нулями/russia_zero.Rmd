@@ -1,0 +1,670 @@
+---
+title: "Моментум-стратегии и reality check Россия"
+output:
+  html_document
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+#setwd("J:/temp/")
+setwd("/home/nazarov/02-fmlab.hse.ru/ТЗ до 29.07.2015/With zero/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+source("reality_func.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+
+n.graph <- 0
+n.table <- 0
+
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("stocks_russia.xlsx"),sheet=1)
+
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+# перебор от 1 до 12 мес , ждем от 0 до 8 недель, держим от 1 до 12 мес
+# Периоды отбора (в месяцах), удержания (в неделях), инвестирования (в месяцах)
+UP1=12
+UP2=8
+UP3=12
+STEP=1
+# N - с учетом отступа
+N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+########################Константы для reality check
+R <- 1
+
+#T <- 164    
+T <- 74
+N_rc <- 500
+Q <- 0.1  
+
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+
+<p>
+<br />
+<br />
+</p>  
+
+>Период отслеживания менялся от **1** до **`r UP1`** месяцев
+
+>Период ожидания менялся от **0** до **`r UP2`** недель
+
+>Период инвестирования менялся от **1** до **`r UP3`** месяцев
+
+<p>
+<br />
+<br />
+</p>  
+
+## 1. Моментум стратегии при равных весах. Ранжирование по средней доходности (бенчмарк 6% годовых - только для reality check)
+
+<p>
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("russia_zero_v1.RDS") # читаем из файла что там есть 
+mylist <- readRDS("russia_zero_v1.RDS") # читаем из файла что там есть 
+V_star <- mylist[[4]]
+V_bar <- mylist[[3]]
+result.data <- mylist[[1]]
+
+ret_p <- c(V_star,V_bar)
+boot.pvalue <- 1-(rank(ret_p, ties.method = "first")[501]-1)/500
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+#datatable(round(result.data[,c(1,2,3,4,5,6,7)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+  
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. ** 
+
+```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
+invest.per<-c() 
+aggr.winner<-c()
+aggr.loser<-c()
+for (k in 1:UP1 ){
+  i<-k*4
+  aggr.winner<-c(aggr.winner, mean(result.data[result.data[,6]==i,8]))
+  aggr.loser<-c(aggr.loser, mean(result.data[result.data[,6]==i,9]))
+  invest.per<-c(invest.per,k)
+}
+
+data.plot2 <- data.frame(invest.per=invest.per,aggr.winner=aggr.winner,aggr.loser=aggr.loser,delta=aggr.winner-aggr.loser)
+
+ggplot(data.plot2, aes(invest.per))  +   geom_line(aes(y = delta, colour = "delta"),size=2, colour = "black",linetype="dashed") + 
+  geom_line(aes(y = aggr.winner, colour = "aggr winner"),size=4, colour = "red") + 
+  geom_line(aes(y = aggr.loser, colour = "aggr loser"),size=2, colour = "blue")+ theme(axis.text.x = element_text(angle = 0, hjust =1,size=27, face="bold"),
+                                                           axis.text.y = element_text(size=25,face="bold") ,axis.title=element_text(size=25,face="bold"),plot.title = element_text(color="blue", size=34, face="bold"))+ 
+labs(title ="Средние доходности по всем стратегиям для побед и проигр", x = "Инвестиционный период в месяцах", y = "Среднемесячная доходность" ) +
+scale_x_continuous(labels = invest.per,breaks = c(1,2,3,4,5,6,7,8,9,10,11,12))  + theme(legend.position="bottom", legend.text=element_text(size=20))
+
+```
+ 
+
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Агрегированные по всем стратегиям доходности победителей и проигравших** 
+```{r, echo=FALSE, results='asis'}
+row.names(data.plot2)<-1:nrow(data.plot2)
+data.plot2[,2]<-round(data.plot2[,2],4)
+data.plot2[,3]<-round(data.plot2[,3],4)
+data.plot2[,4]<-round(data.plot2[,4],4)
+datatable(data.plot2,options = list(pageLength = 5, lengthMenu = c( 5, nrow(data.plot2))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+<p>
+<br />
+<br />
+</p> 
+```{r, echo=FALSE, results='asis'}
+
+sort.table <- result.data[order(-result.data[,1]),] 
+p1 <- sort.table[1,4]/4
+p2 <- sort.table[1,5]
+p3 <- sort.table[1,6]/4
+perc<- sort.table[1,7]
+  
+  
+```
+
+>Лучшая по средней доходности стратегия дает среднемесячную доходность **`r round(sort.table[1,1]*100,2)`** **%** и имеет параметры:
+>период отбора -- **`r p1`** месяцев,  период ожидания -- **`r p2`** недель, период инвестирования -- **`r p3`** месяцев,  процентиль -- **`r perc`** 
+
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+best.strat <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+neg.fold<-best.strat[best.strat<0]
+```
+>Bootstrap p-value равен  **`r boot.pvalue`**
+
+
+<p>
+<br />
+</p> 
+
+>Всего портфелей у лучшей стратегии -- **`r length(best.strat)`** 
+>Количество отрицательных доходностей у лучшей стратегии -- **`r length(neg.fold)`** ( **`r round(length(neg.fold)/length(best.strat)*100,2)`%** )
+ 
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок `r n.graph`. ** 
+
+```{r, echo=FALSE}
+
+hist(best.strat*100,50,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей лучшей стратегии",ylim = c(0, 300))
+
+```
+
+<p>
+<br /> 
+</p>  
+  
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. (вертикальные пунктирные линии - начало нового года) ** 
+
+
+
+```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
+
+winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+x<-as.Date(names(winner))
+data.plot2 <- data.frame(date=x, Win_portf=winner,Los_portf=loser, Win_Los=winner-loser)
+
+
+ggplot(data.plot2, aes(x)) +   geom_line(aes(y = Win_Los, colour = "Win_Los"),size=2, colour = "black",linetype="dashed") + 
+  geom_line(aes(y = Win_portf, colour = "winner"),size=4, colour = "red") + 
+  geom_line(aes(y = Los_portf, colour = "loser"),size=2, colour = "blue")+ theme(axis.text.x = element_text(angle = 60, hjust =1,size=17, face="bold"),
+  axis.text.y = element_text(size=25,face="bold") ,axis.title=element_text(size=25,face="bold"),plot.title = element_text(color="blue", size=34, face="bold"))+ 
+  scale_x_date(labels = date_format("%d/%m/%y"),breaks = date_breaks("1 week"))  + 
+  labs(title ="Доходности победителей и проигравших для лучшей стратегии", x = "Даты", y = "Среднемесячная доходность" ) + 
+  scale_y_continuous()+   geom_vline(xintercept= as.numeric(c(as.Date("2013-01-01"),as.Date("2014-01-01")) ), linetype=6, colour="black",size=2 ) + theme(legend.position="bottom", legend.text=element_text(size=20))+geom_hline(yintercept= 0, linetype=1, colour="black",size=2)+ theme(axis.title.x = element_blank(),
+                    axis.title.y = element_blank())
+
+```
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Доходности победителей и проигравших для лучшей стратегии** 
+```{r, echo=FALSE, results='asis'}
+row.names(data.plot2)<-1:nrow(data.plot2)
+data.plot2[,2]<-round(data.plot2[,2],4)
+data.plot2[,3]<-round(data.plot2[,3],4)
+data.plot2[,4]<-round(data.plot2[,4],4)
+datatable(data.plot2,options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, nrow(data.plot2))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+
+<p>
+<br />
+<br />
+</p>  
+### **Вхождение в победителей и проигравших для лучшей стратегии**
+<p>
+<br />
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. ** 
+
+```{r, echo=FALSE, results='asis',fig.width = 12, fig.height = 7}
+#library(XLConnect)
+#setwd("~/Рабочий стол/fmlab.hse.ru/ТЗ до 29.07.2015/v4")
+ret.companies <- function (p1, p2, p3, STEP, N, d, UP1, UP2, percent)
+{
+  
+  companies <- data.frame ( Ticket=rep(0,ncol(d)), In_winners=rep(0,ncol(d)),  In_losers= rep(0,ncol(d)))
+
+  companies[,1] <- colnames(d)
+  companies[,2] <- rep(0,ncol(d))
+  companies[,3] <- rep(0,ncol(d)) 
+  
+  i<-UP1*4+1+UP2
+  m <- 1 
+  while(i < N){
+    
+    temp1 <- (as.numeric(d[i-p2,]) - as.numeric(d[i-4*p1-p2,]))/as.numeric(d[i-4*p1-p2,])
+    comp.order <- 1:ncol(d)
+   # comp.order <- comp.order[]
+    comp.winners <- rep(0,ncol(d))
+    comp.losers <- rep(0,ncol(d))
+    
+    #temp2 <- d[,order(-temp1)]
+   
+   #d<- d2[,d2[i-4*p1-p2,]!=0]
+    temp1 <- temp1 [d[i-4*p1-p2,]!=0]
+    comp.order <- comp.order [d[i-4*p1-p2,]!=0]  
+     
+    comp.order <- comp.order[order(-temp1)]
+    
+    if(percent==0.5){   
+      comp.winners[comp.order[1:floor(length(temp1)*percent)]] <- 1
+      comp.losers[comp.order[(floor(length(temp1)*percent)+1):(length(temp1))]]<- 1              
+    }
+    else{ 
+      comp.winners[comp.order[1:ceiling(length(temp1)*percent)]]<- 1
+      comp.losers [comp.order[ceiling(length(temp1)*(1-percent)):(length(temp1))]] <- 1 
+    }
+   
+    companies[,2] <- companies[,2] + comp.winners
+    companies[,3] <- companies[,3] + comp.losers
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(companies)
+}
+
+
+
+# Загружаем ранее сохраненные цены закрытия
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_52.xlsx"),sheet=1)
+
+#row.names(resultDataFull) <- resultDataFull[,1]
+#resultDataFull <-resultDataFull[,-1]
+
+
+#p1 <-11
+#p2 <-2
+#p3 <-1
+#percent <-  0.1 
+
+ans <-ret.companies (p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc)
+
+
+colours <- c("red", "blue")
+
+t.ans <- t(ans[order(ans[,2]),])
+
+matrix.ans <- as.matrix(t.ans[-1,])
+colnames(matrix.ans) <- substr(t.ans[1,],1,7) 
+
+barplot(matrix.ans , main="Winners - Losers", ylab = "Count", cex.lab = 1.5, cex.main = 1.4,   col=colours,las=2 )
+legend("topleft", c("Winners", "Losers"), cex=1.3, bty="n", fill=colours)
+
+
+```
+ 
+
+<p>
+<br />
+<br />
+</p>  
+
+
+
+<p>
+<br />
+<br />
+</p>  
+
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. ** 
+
+```{r, echo=FALSE, results='asis',fig.width = 12, fig.height = 7}
+
+colours <- c("red", "blue")
+
+
+t.ans <- t(ans[order(ans[,3]),])
+
+matrix.ans <- as.matrix(t.ans[-1,])
+colnames(matrix.ans) <- substr(t.ans[1,],1,7) 
+
+barplot(matrix.ans , main="Winners - Losers", ylab = "Count", cex.lab = 1.5, cex.main = 1.4,   col=colours,las=2 )
+legend("topleft", c("Winners", "Losers"), cex=1.3, bty="n", fill=colours)
+
+
+```
+ 
+
+<p>
+<br />
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Вхождение компаний в победители и проигравшие для лучшей по средней доходности стратегии** 
+```{r, echo=FALSE, results='asis'}
+datatable(ans ,options = list(pageLength = 5, lengthMenu = c(5, 10, 20, nrow(ans))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+
+
+
+
+
+## 2.  Моментум стратегии при равных весах. Ранжирование по t-статистике (бенчмарк 6% годовых - только для reality check)
+
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+
+sort.table <- result.data[order(-result.data[,2]),] 
+p1 <- sort.table[1,4]/4
+p2 <- sort.table[1,5]
+p3 <- sort.table[1,6]/4
+perc<- sort.table[1,7]
+  
+  
+```
+
+>Лучшая по t-статистике стратегия дает среднемесячную доходность  **`r round(sort.table[1,1]*100,2)`** **%**  и имеет параметры:
+>период отбора -- **`r p1`** месяцев,  период ожидания -- **`r p2`** недель, период инвестирования -- **`r p3`** месяцев,  процентиль -- **`r perc`** 
+
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+best.strat <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+neg.fold<-best.strat[best.strat<0]
+```
+
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("russia_zero_v1.RDS") # читаем из файла что там есть 
+V_star_sharp <- mylist[[6]]
+V_bar_sharp  <- mylist[[5]]
+result.data <- mylist[[1]]
+
+ret_p <- c(V_star_sharp ,V_bar_sharp )
+boot.pvalue <- 1-(rank(ret_p, ties.method = "first")[501]-1)/500
+
+
+```
+
+>Bootstrap p-value равен  **`r boot.pvalue`**
+
+
+<p>
+<br />
+</p> 
+
+>Всего портфелей у лучшей по t-статистике стратегии -- **`r length(best.strat)`** 
+>Количество отрицательных доходностей у лучшей по t-статистике стратегии -- **`r length(neg.fold)`** ( **`r round(length(neg.fold)/length(best.strat)*100,2)`%** )
+ 
+<p>
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок `r n.graph`. ** 
+```{r, echo=FALSE}
+
+hist(best.strat*100,50,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение доходностей лучшей по t-stat стратегии",ylim = c(0, 300))
+
+```
+
+<p>
+<br /> 
+</p>  
+  
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок `r n.graph`. (вертикальные пунктирные линии - начало нового года) ** 
+
+
+
+```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
+
+winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
+x<-as.Date(names(winner))
+data.plot2 <- data.frame(date=x, Win_portf=winner,Los_portf=loser, Win_Los=winner-loser)
+
+
+ggplot(data.plot2, aes(x))  +   geom_line(aes(y =  Win_Los, colour = "delta"),size=2, colour = "black",linetype="dashed") + 
+  geom_line(aes(y = Win_portf, colour = "winner"),size=4, colour = "red") + 
+  geom_line(aes(y = Los_portf, colour = "loser"),size=2, colour = "blue")+ theme(axis.text.x = element_text(angle = 60, hjust =1,size=17, face="bold"),
+  axis.text.y = element_text(size=25,face="bold") ,axis.title=element_text(size=25,face="bold"),plot.title = element_text(color="blue", size=34, face="bold"))+ 
+  scale_x_date(labels = date_format("%d/%m/%y"),breaks = date_breaks("1 week"))  + 
+  labs(title ="Доходности победителей и проигравших для лучшей стратегии", x = "Даты", y = "Среднемесячная доходность" ) + 
+  scale_y_continuous()+   geom_vline(xintercept= as.numeric(c(as.Date("2013-01-01"),as.Date("2014-01-01")) ), linetype=6, colour="black",size=2 )+ theme(legend.position="bottom")+geom_hline(yintercept= 0, linetype=1, colour="black",size=2)+ theme(axis.title.x = element_blank(),
+                    axis.title.y = element_blank())
+
+```
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Доходности победителей и проигравших для лучшей стратегии** 
+```{r, echo=FALSE, results='asis'}
+row.names(data.plot2)<-1:nrow(data.plot2)
+data.plot2[,2]<-round(data.plot2[,2],4)
+data.plot2[,3]<-round(data.plot2[,3],4)
+data.plot2[,4]<-round(data.plot2[,4],4)
+datatable(data.plot2,options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, nrow(data.plot2))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+<p>
+<br />
+<br />
+</p>  
+### **Вхождение в победителей и проигравших для лучшей стратегии**
+<p>
+<br />
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. ** 
+
+```{r, echo=FALSE, results='asis',fig.width = 12, fig.height = 7}
+#library(XLConnect)
+#setwd("~/Рабочий стол/fmlab.hse.ru/ТЗ до 29.07.2015/v4")
+ret.companies <- function (p1, p2, p3, STEP, N, d, UP1, UP2, percent)
+{
+  
+  companies <- data.frame ( Ticket=rep(0,ncol(d)), In_winners=rep(0,ncol(d)),  In_losers= rep(0,ncol(d)))
+
+  companies[,1] <- colnames(d)
+  companies[,2] <- rep(0,ncol(d))
+  companies[,3] <- rep(0,ncol(d)) 
+  
+  i<-UP1*4+1+UP2
+  m <- 1 
+  while(i < N){
+    
+    temp1 <- (as.numeric(d[i-p2,]) - as.numeric(d[i-4*p1-p2,]))/as.numeric(d[i-4*p1-p2,])
+    comp.order <- 1:ncol(d)
+   # comp.order <- comp.order[]
+    comp.winners <- rep(0,ncol(d))
+    comp.losers <- rep(0,ncol(d))
+    
+    #temp2 <- d[,order(-temp1)]
+   
+   #d<- d2[,d2[i-4*p1-p2,]!=0]
+    temp1 <- temp1 [d[i-4*p1-p2,]!=0]
+    comp.order <- comp.order [d[i-4*p1-p2,]!=0]  
+     
+    comp.order <- comp.order[order(-temp1)]
+    
+    if(percent==0.5){   
+      comp.winners[comp.order[1:floor(length(temp1)*percent)]] <- 1
+      comp.losers[comp.order[(floor(length(temp1)*percent)+1):(length(temp1))]]<- 1              
+    }
+    else{ 
+      comp.winners[comp.order[1:ceiling(length(temp1)*percent)]]<- 1
+      comp.losers [comp.order[ceiling(length(temp1)*(1-percent)):(length(temp1))]] <- 1 
+    }
+   
+    companies[,2] <- companies[,2] + comp.winners
+    companies[,3] <- companies[,3] + comp.losers
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(companies)
+}
+
+
+# Загружаем ранее сохраненные цены закрытия
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_52.xlsx"),sheet=1)
+
+#row.names(resultDataFull) <- resultDataFull[,1]
+#resultDataFull <-resultDataFull[,-1]
+
+
+#p1 <-11
+#p2 <-2
+#p3 <-1
+#percent <-  0.1 
+
+ans <-ret.companies (p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc)
+
+
+colours <- c("red", "blue")
+
+t.ans <- t(ans[order(ans[,2]),])
+
+matrix.ans <- as.matrix(t.ans[-1,])
+colnames(matrix.ans) <- substr(t.ans[1,],1,7) 
+
+barplot(matrix.ans , main="Winners - Losers", ylab = "Count", cex.lab = 1.5, cex.main = 1.4,   col=colours,las=2 )
+legend("topleft", c("Winners", "Losers"), cex=1.3, bty="n", fill=colours)
+
+
+```
+ 
+
+<p>
+<br />
+<br />
+</p>  
+
+
+
+<p>
+<br />
+<br />
+</p>  
+
+
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок  `r n.graph`. ** 
+
+```{r, echo=FALSE, results='asis',fig.width = 12, fig.height = 7}
+
+colours <- c("red", "blue")
+
+
+t.ans <- t(ans[order(ans[,3]),])
+
+matrix.ans <- as.matrix(t.ans[-1,])
+colnames(matrix.ans) <- substr(t.ans[1,],1,7) 
+
+barplot(matrix.ans , main="Winners - Losers", ylab = "Count", cex.lab = 1.5, cex.main = 1.4,   col=colours,las=2 )
+legend("topleft", c("Winners", "Losers"), cex=1.3, bty="n", fill=colours)
+
+
+```
+ 
+
+<p>
+<br />
+<br />
+</p>  
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Вхождение компаний в победители и проигравшие для лучшей по t-статистике стратегии** 
+```{r, echo=FALSE, results='asis'}
+datatable(ans ,options = list(pageLength = 5, lengthMenu = c(5, 10, 20, nrow(ans))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+

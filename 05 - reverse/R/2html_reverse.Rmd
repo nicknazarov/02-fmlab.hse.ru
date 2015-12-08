@@ -1,0 +1,158 @@
+---
+title: "Проверка реверсии (данные с нулями)"
+output:
+  html_document:
+      pandoc_args: [
+      "+RTS", "-K64m",
+      "-RTS"
+    ]
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+#setwd("J:/temp/")
+setwd("/home/nazarov/02-fmlab.hse.ru/05 - reverse/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+source("R/reality_func2.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+
+n.graph <- 0
+n.table <- 0
+
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_russia.xlsx"),sheet=1)
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_china.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+## ________________________________Россия____________________________
+  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("russia_zero_v1.RDS") # читаем из файла что там есть 
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/Russia_short_res.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+#datatable(round(result.data[,c(1,2,3,4,5,6,7)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+  
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_india.xlsx"),sheet=1)
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_china.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+## _____________________________Индия_____________________________
+  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/India_short_res.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+ 
+ 
+ 
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_brazil.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+## _____________________________Бразилия________________________
+  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/brazil_short_res.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
