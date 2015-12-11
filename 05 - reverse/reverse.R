@@ -21,23 +21,36 @@ source("R/reality_func2.R")
 #country_name <- "Россия"
 #country_name_eng <- "Russia"
 
-country_name <- "Бразилия"
-country_name_eng <- "brazil"
+#country_name <- "Бразилия"
+#country_name_eng <- "brazil"
 
-#temp <-  ret(4, 1, 4, STEP, N, price_d5, UP1, UP2, 0.1) 
+#country_name <- "Бразилия"
+#country_name_eng <- "china"
+
+#country_name <- "Бразилия"
+country_name_eng <- "malaysia"
+
+#temp <-  ret(44, 0, 44, STEP, N, price_d5, UP1, UP2, 0.1) 
+ 
 #T <- 164 
 #india
 #T <- 166 
 #russia
-T <- 313
+#T <- 313
 #brazil
-T <- 147
+#T <- 147
+#china
+#T <- 288
+#malaysia
+T <- 305
+
+
 
 #############################################################################
 # Загрузка 
 setwd("/home/nazarov/02-fmlab.hse.ru/05 - reverse/")
-price_d5<- readWorksheet(loadWorkbook(paste("data","/stocks_brazil.xlsx",sep="")),sheet=1)
-
+#price_d5<- readWorksheet(loadWorkbook(paste("data","/stocks_china.xlsx",sep="")),sheet=1)
+price_d5<- read.csv("data/stocks_malaysia.csv")
 row.names(price_d5) <- price_d5[,1]
 price_d5 <-price_d5[,-1]
 
@@ -170,16 +183,5 @@ saveRDS(file = paste("results/",country_name_eng,"_short_res",".RDS",sep=""),sho
 #print(sprintf("%s Start", Sys.time()))
 end_time <- Sys.time()
 
-#############################################################################
-# Подсчет необходимых статистик
 
-
-
-#############################################################################
-# Генерация html кода и рассылка на почту
-
-knit(input="R/2html_5days.rmd", output="2html_5days.md", encoding='UTF-8')
-markdownToHTML("2html_5days.md","results/Календарные_эффекты.html", stylesheet="view/custom.css")
-file.remove("2html_5days.md")
-#print(sprintf("%s End", Sys.time()))
 

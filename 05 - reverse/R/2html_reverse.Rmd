@@ -25,13 +25,6 @@ library(scales)
 n.graph <- 0
 n.table <- 0
 
-# Загружаем ранее сохраненные цены закрытия
-resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_russia.xlsx"),sheet=1)
-#resultDataFull<- readWorksheet(loadWorkbook("stocks_china.xlsx"),sheet=1)
-row.names(resultDataFull) <- resultDataFull[,1]
-resultDataFull <-resultDataFull[,-1]
-
-
 ###########################################################################################
 ```
  <p>
@@ -40,7 +33,18 @@ resultDataFull <-resultDataFull[,-1]
  
 ## ________________________________Россия____________________________
   
+```{r, echo=FALSE, results='asis'}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_russia.xlsx"),sheet=1)
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_china.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+```  
+  
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **313** 
 <p>
 <br />
 <br />
@@ -67,25 +71,21 @@ datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = l
 
 <p>
 <br /> 
-</p>  
-  
+</p>   
+ 
+## _____________________________Индия_____________________________
+
 ```{r, include=FALSE}
 # Загружаем ранее сохраненные цены закрытия
 resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_india.xlsx"),sheet=1)
 #resultDataFull<- readWorksheet(loadWorkbook("stocks_china.xlsx"),sheet=1)
 row.names(resultDataFull) <- resultDataFull[,1]
 resultDataFull <-resultDataFull[,-1]
-
-
-###########################################################################################
 ```
- <p>
- <br />
- </p>  
- 
-## _____________________________Индия_____________________________
-  
+
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **166** 
 <p>
 <br />
 <br />
@@ -111,23 +111,16 @@ datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = l
 <p>
 <br /> 
 </p>  
- 
- 
- 
+## _____________________________Бразилия________________________
 ```{r, include=FALSE}
 # Загружаем ранее сохраненные цены закрытия
 resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_brazil.xlsx"),sheet=1)
 row.names(resultDataFull) <- resultDataFull[,1]
 resultDataFull <-resultDataFull[,-1]
-###########################################################################################
-```
- <p>
- <br />
- </p>  
- 
-## _____________________________Бразилия________________________
-  
->Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+```  
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`**
+
+>Количество портфелей, использованных для подсчета средней доходности -- **147** 
 <p>
 <br />
 <br />
@@ -154,5 +147,74 @@ datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = l
 <br /> 
 </p>   
 
+## _____________________________Китай________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_china.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **288** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/china_short_res.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
 
 
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+## _____________________________Малайзия________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/stocks_malaysia.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **305** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/malaysia_short_res.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
