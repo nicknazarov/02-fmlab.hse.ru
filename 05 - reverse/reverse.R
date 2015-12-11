@@ -32,15 +32,19 @@ country_name_eng <- "malaysia"
 
 #temp <-  ret(44, 0, 44, STEP, N, price_d5, UP1, UP2, 0.1) 
  
-#T <- 164 
+
 #india
 #T <- 166 
+
 #russia
 #T <- 313
+
 #brazil
 #T <- 147
+
 #china
 #T <- 288
+
 #malaysia
 T <- 305
 
