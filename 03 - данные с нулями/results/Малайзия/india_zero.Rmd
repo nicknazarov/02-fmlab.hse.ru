@@ -1,5 +1,5 @@
 ---
-title: "Моментум-стратегии и reality check Китай (данные с нулями)"
+title: "Моментум-стратегии и reality check Малайзия (данные с нулями)"
 output:
   html_document:
       pandoc_args: [
@@ -24,6 +24,7 @@ n.graph <- 0
 n.table <- 0
 
 # Загружаем ранее сохраненные цены закрытия
+#resultDataFull<- readWorksheet(loadWorkbook("stocks_malaysia.xlsx"),sheet=1)
 
 resultDataFull <-  read.csv("stocks_malaysia.csv")
 row.names(resultDataFull) <- resultDataFull[,1]
@@ -206,7 +207,7 @@ n.graph<-n.graph+1
 
 #hist(best.strat*100,50,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение среднемесячных доходносте#й лучшей стратегии",ylim = c(0, 300))
 
-hist(best.strat*100,20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей лучшей стратегии",ylim = c(0, 50))
+hist(best.strat*100,20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей лучшей стратегии",ylim = c(0, 150))
 
 ```
 
@@ -224,10 +225,9 @@ n.graph<-n.graph+1
 
 
 ```{r, echo=FALSE, results='asis',fig.width = 24, fig.height = 11}
-
 winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
 loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
-x<-as.Date(names(winner))
+x<-as.Date(names(winner), "%d.%m.%Y")
 data.plot2 <- data.frame(date=x, Win_portf=winner,Los_portf=loser, Win_Los=winner-loser)
 
 
@@ -475,7 +475,7 @@ n.graph<-n.graph+1
 ####**Рисунок `r n.graph`. ** 
 ```{r, echo=FALSE}
 
-hist(best.strat*100,20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение доходностей лучшей по t-stat стратегии",ylim = c(0, 50))
+hist(best.strat*100,20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность(%)", ylab = "Количество портфелей", main = "Распределение доходностей лучшей по t-stat стратегии",ylim = c(0, 150))
 
 ```
 
@@ -495,7 +495,7 @@ n.graph<-n.graph+1
 
 winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
 loser <- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, perc) 
-x<-as.Date(names(winner))
+x<-as.Date(names(winner), "%d.%m.%Y")
 data.plot2 <- data.frame(date=x, Win_portf=winner,Los_portf=loser, Win_Los=winner-loser)
 
 

@@ -31,9 +31,9 @@ resultDataFull <-resultDataFull[,-1]
 # Шаг для подсчета разниц в группах победителей и проигравших
 STEP=1
 # Периоды отбора (в месяцах), удержания (в неделях), инвестирования (в месяцах)
-UP1=48
+UP1=12
 UP2=8
-UP3=48
+UP3=12
 
 #UP1=2
 #UP2=2
@@ -49,7 +49,10 @@ R <- 1
 #temp <- ret(4, 1, 4, STEP, N, resultDataFull[,-1], UP1, UP2, 0.3) 
 
 #T <- 164    
-T <- 297
+
+#T <- 297
+T <- 585
+
 N_rc <- 500
 Q <- 0.1  
 #n <- T-R+1
@@ -156,7 +159,7 @@ for (percent in c(0.5,0.3,0.2,0.1) ){
 
 # сохранение результатов работы
 stuff <- list(data=realityCheckData, num=N, V_bar=V_bar,V_star=V_star, V_bar_sharp=V_bar_sharp,V_star_sharp=V_star_sharp)  # список ценных объектов
-saveRDS(file = "china_zero_v1.RDS",stuff) # сохраняем всё ценное в файл
+saveRDS(file = "malaysia_zero_16.12.RDS",stuff) # сохраняем всё ценное в файл
 mylist <- readRDS("tz_india_v1.RDS") # читаем из файла что там есть 
 #res_sh <- head(mylist$data[order(-mylist$data[,2]) ,],20) # просматриваем лучшие результаты
 
