@@ -37,8 +37,10 @@ source("R/reality_func2.R")
 #country_name_eng <- "india"
 #country_name_eng <- "taiwan"
 #country_name_eng <- "korea"
-country_name_eng <- "indonesia"
+#country_name_eng <- "indonesia"
 
+#country_name_eng <- "phil"
+country_name_eng <- "china"
 
 #india
 #T <- 166 
@@ -66,10 +68,19 @@ country_name_eng <- "indonesia"
 
 
 #korea
-T <- 305
+#T <- 305
 
 #indonesia
-T <- 273
+#T <- 273
+
+
+#phil
+#T <- 282
+
+#china
+T <- 288
+
+
 #############################################################################
 # Загрузка 
 
@@ -112,11 +123,24 @@ T <- 273
 #price_d4<- readWorksheet(loadWorkbook("data/5 days korea/korea_price_Thur.xlsx"),sheet=1)
 #price_d5<- readWorksheet(loadWorkbook("data/5 days korea/korea_price_Fri.xlsx"),sheet=1)
 
-price_d1 <- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Mn.xlsx"),sheet=1)
-price_d2<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Tues.xlsx"),sheet=1)
-price_d3<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Wed.xlsx"),sheet=1)
-price_d4<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Thur.xlsx"),sheet=1)
-price_d5<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
+#price_d1 <- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Mn.xlsx"),sheet=1)
+#price_d2<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Tues.xlsx"),sheet=1)
+#price_d3<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Wed.xlsx"),sheet=1)
+#price_d4<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Thur.xlsx"),sheet=1)
+#price_d5<- readWorksheet(loadWorkbook("data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
+
+
+#price_d1 <- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Mn.csv", header=TRUE)
+#price_d2<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Tues.csv", header=TRUE)
+#price_d3<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Wed.csv", header=TRUE)
+#price_d4<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Thur.csv", header=TRUE)
+#price_d5<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Fri.csv", header=TRUE)
+
+price_d1 <- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Mn.csv", header=TRUE)
+price_d2<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Tues.csv", header=TRUE)
+price_d3<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Wed.csv", header=TRUE)
+price_d4<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Thur.csv", header=TRUE)
+price_d5<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Fri.csv", header=TRUE)
 
 
 row.names(price_d5) <- price_d5[,1]

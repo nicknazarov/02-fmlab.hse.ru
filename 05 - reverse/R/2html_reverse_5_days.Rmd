@@ -19,7 +19,7 @@ library(DT)
 panderOptions('table.split.table', Inf) 
 source("R/reality_func2.R")
 library(XLConnect)
-library(ggplot2)
+#library(ggplot2)
 library(scales)
 
 n.graph <- 0
@@ -285,5 +285,74 @@ datatable(round(result.data[,c(1,2,3,4,5,6,7,8,11)],6), filter = 'top',options =
 <br /> 
 </p>   
 
+## _____________________________Филиппины________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Mn.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **282** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/phil_short_res_5_days.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
 
 
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,8,11)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+## _____________________________Китай________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days china/china_price_Mn.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **288** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/05 - reverse/results/china_short_res_5_days.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,8,11)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
