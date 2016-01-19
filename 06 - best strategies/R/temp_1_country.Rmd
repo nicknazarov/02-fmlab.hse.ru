@@ -1,0 +1,79 @@
+---
+title: "Все стратегии - только таблицы (данные с нулями)"
+output:
+  html_document:
+      pandoc_args: [
+      "+RTS", "-K64m",
+      "-RTS"
+    ]
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+#setwd("J:/temp/")
+setwd("/home/nazarov/02-fmlab.hse.ru/05 - reverse/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+source("R/reality_func2.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+
+n.graph <- 0
+n.table <- 0
+
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+>Период отслеживания менялся от  **`r 1`** месяца до  **`r 12`**
+
+>Период ожидания менялся от  **`r 0`**  до  **`r 8`** недель
+
+>Период инвестирования менялся от  **`r 1`** месяца до  **`r 24`**
+
+>Рассматривалось 4 процентили  **`r 0.5`**,  **`r 0.3`** ,  **`r 0.2`**,  **`r 0.1`**     
+ <p>
+ <br />
+ </p>  
+
+## _____________________________Индонезия________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **505** 
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+mylist <- readRDS("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/indonesia_best.RDS") # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+<p>
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result.data[,c(1,2,3,4,5,6,7,10)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   

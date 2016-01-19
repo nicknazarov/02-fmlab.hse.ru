@@ -114,46 +114,54 @@ UP3=24
 #############################################################################
 # Процедура формирования портфелей, подсчета статистик и bootstrap
 start_time <- Sys.time()
-m <- 1
-realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
+
+#realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
 colnames(realityCheckData) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
 resultDataFull <- price_d5
 N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+
 library(parallel)
 #nn.p<-function()
 #{
-  print("Параллельное выполнение")
-  cl <- makeCluster(getOption("cl.cores", 4)) # создание кластера из четырёх ядер процессора
-  clusterExport(cl,"infert") # передача данных внутрь кластера
-  clusterEvalQ(cl,source("R/reality_func2.R")) # загрузка функций в кластер
-  #clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
+print("Параллельное выполнение")
+cl <- makeCluster(getOption("cl.cores", 4)) # создание кластера из четырёх ядер процессора
+clusterExport(cl,"infert") # передача данных внутрь кластера
+clusterEvalQ(cl,source("R/reality_func2.R")) # загрузка функций в кластер
+#clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
 start_time <- Sys.time()
-  parSapply(cl,  c(0.5,0.3,0.2,0.1), function(percent, UP1, UP2, UP3, STEP, resultDataFull,realityCheckData, N, m) # параллельная версия sapply
-    {       
-      for (p1 in 1:UP1 ){
-        for (p2 in 0:UP2 ){   
-          for (p3 in 1:UP3 ){  
-            #вектор дельт    
-            temp <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-            return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-            return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-            n <- length(temp)
-            realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
-                                          mean(return.winner), mean(return.loser),length(temp[temp<0]))    
+temp1 <- parLapply(cl,  c(0.5,0.3,0.2,0.1), function(percent, UP1, UP2, UP3, STEP, resultDataFull, N) # параллельная версия sapply
+{    m <- 1  
+     realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
+     for (p1 in 1:UP1 ){
+       for (p2 in 0:UP2 ){   
+         for (p3 in 1:UP3 ){  
+           #вектор дельт    
+           temp <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           n <- length(temp)
+           realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
+                                         mean(return.winner), mean(return.loser),length(temp[temp<0]))    
            # message(sprintf("%d", Sys.time()))
-            #cat(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, n, percent, mean(return.winner), mean(return.loser),length(temp[temp<0]), "\n")
-            m <- m+1      
-          }
-        }
-      }
-    end_time <- Sys.time()
-}, UP1, UP2, UP3, STEP, resultDataFull,realityCheckData, N, m)
+           #cat(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, n, percent, mean(return.winner), mean(return.loser),length(temp[temp<0]), "\n")
+           m <- m+1      
+         }
+       }
+     }
+     return (realityCheckData)
+     
+}, UP1, UP2, UP3, STEP, resultDataFull, N)
 stopCluster(cl)
-#}
 
+
+end_time <- Sys.time()
+
+
+temp2 <-do.call("rbind", temp1)
+colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
 #Сохранение результатов
-short_res <- list(data=realityCheckData, num=N)  # список ценных объектов
-saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
+short_res <- list(data=temp2, num=N)  # список ценных объектов
+saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
 
 
 ##################################################################
@@ -205,11 +213,12 @@ UP3=24
 #############################################################################
 # Процедура формирования портфелей, подсчета статистик и bootstrap
 start_time <- Sys.time()
-m <- 1
-realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
-colnames(realityCheckData) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
+
+#realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
+#colnames(realityCheckData) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
 resultDataFull <- price_d5
 N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+
 library(parallel)
 #nn.p<-function()
 #{
@@ -219,33 +228,39 @@ clusterExport(cl,"infert") # передача данных внутрь клас
 clusterEvalQ(cl,source("R/reality_func2.R")) # загрузка функций в кластер
 #clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
 start_time <- Sys.time()
-parSapply(cl,  c(0.5,0.3,0.2,0.1), function(percent, UP1, UP2, UP3, STEP, resultDataFull,realityCheckData, N, m) # параллельная версия sapply
-{       
-  for (p1 in 1:UP1 ){
-    for (p2 in 0:UP2 ){   
-      for (p3 in 1:UP3 ){  
-        #вектор дельт    
-        temp <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-        return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-        return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-        n <- length(temp)
-        realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
-                                      mean(return.winner), mean(return.loser),length(temp[temp<0]))    
-        # message(sprintf("%d", Sys.time()))
-        #cat(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, n, percent, mean(return.winner), mean(return.loser),length(temp[temp<0]), "\n")
-        m <- m+1      
-      }
-    }
-  }
-  end_time <- Sys.time()
-}, UP1, UP2, UP3, STEP, resultDataFull,realityCheckData, N, m)
+temp1 <- parLapply(cl,  c(0.5,0.3,0.2,0.1), function(percent, UP1, UP2, UP3, STEP, resultDataFull, N) # параллельная версия sapply
+{    m <- 1  
+     realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
+     for (p1 in 1:UP1 ){
+       for (p2 in 0:UP2 ){   
+         for (p3 in 1:UP3 ){  
+           #вектор дельт    
+           temp <- ret(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+           n <- length(temp)
+           realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
+                                         mean(return.winner), mean(return.loser),length(temp[temp<0]))    
+           # message(sprintf("%d", Sys.time()))
+           #cat(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, n, percent, mean(return.winner), mean(return.loser),length(temp[temp<0]), "\n")
+           m <- m+1      
+         }
+       }
+     }
+     return (realityCheckData)
+     
+}, UP1, UP2, UP3, STEP, resultDataFull, N)
 stopCluster(cl)
-#}
 
+
+end_time <- Sys.time()
+
+
+temp2 <-do.call("rbind", temp1)
+colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
 #Сохранение результатов
-short_res <- list(data=realityCheckData, num=N)  # список ценных объектов
-saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
-
+short_res <- list(data=temp2, num=N)  # список ценных объектов
+saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
 
 
 
