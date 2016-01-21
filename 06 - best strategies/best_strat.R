@@ -23,8 +23,8 @@ source("R/reality_func2.R")
 #country_name_eng <- "bangkok"
 #country_name_eng <- "india"
 #country_name_eng <- "taiwan"
-#country_name_eng <- "korea"
-country_name_eng <- "indonesia"
+country_name_eng <- "korea"
+#country_name_eng <- "indonesia"
 #country_name_eng <- "phil"
 #country_name_eng <- "china"
 
@@ -58,10 +58,10 @@ country_name_eng <- "indonesia"
 
 
 #korea
-#T <- 305
+T <- 305
 
 ##indonesia
-T <- 505
+#T <- 505
 
 
 #phil
@@ -80,7 +80,7 @@ T <- 505
 
 #price_d5<- readWorksheet(loadWorkbook("data/5 days brazil/brazil_price_Fri.xlsx"),sheet=1)
 
-#price_d5<- readWorksheet(loadWorkbook("data/5 days malaysia/malaysia_price_Fri.xlsx"),sheet=1)
+##price_d5<- readWorksheet(loadWorkbook("data/5 days malaysia/malaysia_price_Fri.xlsx"),sheet=1)
 
 #price_d5<- readWorksheet(loadWorkbook("data/5 days bangkok/bangkok_price_Fri.xlsx"),sheet=1)
 
@@ -88,9 +88,9 @@ T <- 505
 
 #price_d5 <- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days taiwan/taiwan_price_Fri.csv", header=TRUE)
 
-#price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days korea/korea_price_Fri.xlsx"),sheet=1)
+price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days korea/korea_price_Fri.xlsx"),sheet=1)
 
-price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
+##price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
 
 #price_d5<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days phil/phil_price_Fri.csv", header=TRUE)
 
@@ -163,6 +163,8 @@ colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","p
 short_res <- list(data=temp2, num=N)  # список ценных объектов
 saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
 
+start_time
+end_time
 
 ##################################################################
 ##################################################################
@@ -266,8 +268,8 @@ saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results
 
 
 
-
-
+start_time
+end_time
 
 
 
