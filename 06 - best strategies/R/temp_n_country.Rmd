@@ -52,6 +52,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **520** 
+
 <p>
 <br />
 <br />
@@ -63,6 +64,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
@@ -87,6 +89,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **555** 
+
 <p>
 <br />
 <br />
@@ -98,6 +101,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
@@ -122,6 +126,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **545** 
+
 <p>
 <br />
 <br />
@@ -133,6 +138,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
@@ -157,6 +163,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **531** 
+
 <p>
 <br />
 <br />
@@ -168,11 +175,12 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
 ```{r, echo=FALSE, results='asis'}
-n.table<-n.table+1
+n.table <-n.table+1
 ```
 ####**Таблица `r n.table`. Все стратегии ** 
 ```{r, echo=FALSE, results='asis'}
@@ -192,6 +200,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **505** 
+
 <p>
 <br />
 <br />
@@ -203,6 +212,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
@@ -227,6 +237,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **537** 
+
 <p>
 <br />
 <br />
@@ -238,6 +249,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  
@@ -262,6 +274,7 @@ resultDataFull <-resultDataFull[,-1]
 >Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **537** 
+
 <p>
 <br />
 <br />
@@ -273,6 +286,7 @@ result.data <- mylist[[1]]
 
 
 >Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
 <p>
 <br />
 </p>  

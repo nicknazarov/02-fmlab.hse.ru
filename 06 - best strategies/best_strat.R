@@ -17,14 +17,14 @@ source("R/reality_func2.R")
 
 #country_name_eng <- "india"
 #country_name_eng <- "russia"
-#
-country_name_eng <- "brazil"
+#country_name_eng <- "brazil"
 #country_name_eng <- "china"
 #country_name_eng <- "malaysia"
 #country_name_eng <- "bangkok"
 #country_name_eng <- "india"
 #country_name_eng <- "taiwan"
-#country_name_eng <- "korea"
+#
+country_name_eng <- "korea"
 #country_name_eng <- "indonesia"
 #country_name_eng <- "phil"
 #country_name_eng <- "china"
@@ -35,7 +35,7 @@ country_name_eng <- "brazil"
 
 #brazil
 #T <- 299 old
-T <- 531
+#T <- 531
 
 #№malaysia
 #T <- 537
@@ -77,8 +77,7 @@ T <- 531
 
 #price_d5<- readWorksheet(loadWorkbook("data/stocks_russia.xlsx"),sheet=1)
 
-#
-price_d5<- readWorksheet(loadWorkbook("data/5 days brazil/brazil_price_Fri.xlsx"),sheet=1)
+#price_d5<- readWorksheet(loadWorkbook("data/5 days brazil/brazil_price_Fri.xlsx"),sheet=1)
 
 ##price_d5<- readWorksheet(loadWorkbook("data/5 days malaysia/malaysia_price_Fri.xlsx"),sheet=1)
 
@@ -88,7 +87,8 @@ price_d5<- readWorksheet(loadWorkbook("data/5 days brazil/brazil_price_Fri.xlsx"
 
 #price_d5 <- read.csv(file="/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days taiwan/taiwan_price_Fri.csv", header=TRUE)
 
-#price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days korea/korea_price_Fri.xlsx"),sheet=1)
+#
+price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days korea/korea_price_Fri.xlsx"),sheet=1)
 
 ##price_d5<- readWorksheet(loadWorkbook("/home/nazarov/02-fmlab.hse.ru/05 - reverse/data/5 days indonesia/indonesia_price_Fri.xlsx"),sheet=1)
 
@@ -109,6 +109,11 @@ STEP=1
 UP1=12
 UP2=8
 UP3=24
+
+N <- (nrow(price_d5)-(2+UP3*4))%/%STEP 
+temp_for_T <-  ret(4, 0, 4, STEP, N, price_d5, UP1, UP2, 0.1) 
+T <- length(temp_for_T)
+
 # N - с учетом отступа
 #n <- T-R+1
 #############################################################################
@@ -116,7 +121,7 @@ UP3=24
 start_time <- Sys.time()
 
 resultDataFull <- price_d5
-N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+#N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
 
 library(parallel)
 #nn.p<-function()
