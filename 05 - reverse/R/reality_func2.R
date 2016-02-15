@@ -271,3 +271,185 @@ ret.companies <- function (p1, p2, p3, STEP, N, d, UP1, UP2, percent)
   }   
   return(companies)
 }
+
+######################################################################################################
+
+ret_with_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+  #invest_date <- c()
+  # набор дельт  - ans
+  ans <- c() 
+  i<-UP1*4+1+UP2
+  m <- 1 
+  while(i < N){
+    
+    d<- d2[,d2[i-4*p1-p2,]!=0 & d2[i,]!=0 & d2[i-p2,]!=0]
+    
+    temp1 <- (as.numeric(d[i-p2,]) - as.numeric(d[i-4*p1-p2,]))/as.numeric(d[i-4*p1-p2,])
+    #temp1 <- ( t(d)[,i-p2] - t(d)[,i-4*p1-p2 ]) / t(d)[,i-4*p1-p2]
+    
+    temp2 <- d[,order(-temp1)]
+    
+    #######################################################################################################   
+    # Для случая нахождения нулей в середине столбца с ценами закрытия - меняем ноль на последний ненулевой   
+    
+    for(k in 1:ncol(temp2)){
+      if(temp2[i+p3*4, k]==0){
+        
+        count<-1
+        while(temp2[i+p3*4-count,k]==0){
+          count<-count+1
+        }
+        temp2[i+p3*4, k] <- temp2[i+p3*4-count, k] 
+        
+      }
+    }
+    #######################################################################################################  
+    
+    
+    temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+    #invest_date <- c( invest_date ,temp2[i,1])
+    
+    if(percent==0.5){
+      ans[m] <- (sum(temp3[1:floor(length(temp3)*percent)] )/ floor(length(temp3)*percent)- 
+                   sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)-floor(length(temp3)*percent)))/p3
+    }
+    else{
+      ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
+                   sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
+      
+      #print("########################")
+      #print(length(temp3) - ceiling(length(temp3)*(1-percent))+1  )
+      #print(ceiling(length(temp3)*percent))   
+      #print("########################")
+      
+    }
+    
+    names(ans)[m] <- row.names(d)[i]    
+    
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(data.frame(ret = ans))
+}
+
+
+###########################################################################################
+
+ret.winner_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+  
+  
+  # набор дельт  - ans
+  ans <- c() 
+  i<-UP1*4+1+UP2
+  m <- 1 
+  while(i < N){
+    
+    d<- d2[,d2[i-4*p1-p2,]!=0 & d2[i,]!=0 & d2[i-p2,]!=0]
+    
+    temp1 <- (as.numeric(d[i-p2,]) - as.numeric(d[i-4*p1-p2,]))/as.numeric(d[i-4*p1-p2,])
+    # temp1 <- (t (d)[,i-p2] - t (d) [,i-4*p1-p2 ])/t (d)[,i-4*p1-p2]
+    
+    temp2 <- d[,order(-temp1)]
+    
+    
+    #######################################################################################################   
+    # Для случая нахождения нулей в середине столбца с ценами закрытия - меняем ноль на последний ненулевой   
+    
+    for(k in 1:length(temp2)){
+      if(temp2[i+p3*4, k]==0){
+        
+        count<-1
+        while(temp2[i+p3*4-count,k]==0){
+          count<-count+1
+        }
+        temp2[i+p3*4, k] <- temp2[i+p3*4-count, k] 
+        
+      }
+    }
+    #######################################################################################################  
+    
+    
+    temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+    
+    if(percent==0.5){
+      ans[m] <- (sum(temp3[1:floor(length(temp3)*percent)] )/ floor(length(temp3)*percent))/p3
+    }
+    else{
+      ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent))/p3
+      
+      #print("########################")
+      #print(length(temp3) - ceiling(length(temp3)*(1-percent))+1  )
+      #print(ceiling(length(temp3)*percent))   
+      #print("########################")
+      
+    }
+    
+    names(ans)[m] <- row.names(d)[i]    
+    
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(data.frame(win_ret = ans))
+}
+
+
+###########################################################################################
+
+ret.loser_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+  
+  # набор дельт  - ans
+  ans <- c() 
+  i<-UP1*4+1+UP2
+  m <- 1 
+  while(i < N){
+    
+    d<- d2[,d2[i-4*p1-p2,]!=0 & d2[i,]!=0 & d2[i-p2,]!=0]
+    
+    temp1 <- (as.numeric(d[i-p2,]) - as.numeric(d[i-4*p1-p2,]))/as.numeric(d[i-4*p1-p2,])
+    #temp1 <- (t (d)[,i-p2] - t (d) [,i-4*p1-p2 ])/t (d)[,i-4*p1-p2]
+    
+    temp2 <- d[,order(-temp1)]
+    
+    #######################################################################################################   
+    # Для случая нахождения нулей в середине столбца с ценами закрытия - меняем ноль на последний ненулевой   
+    
+    for(k in 1:length(temp2)){
+      if(temp2[i+p3*4, k]==0){
+        
+        count<-1
+        while(temp2[i+p3*4-count,k]==0){
+          count<-count+1
+        }
+        temp2[i+p3*4, k] <- temp2[i+p3*4-count, k] 
+        
+      }
+    }
+    #######################################################################################################  
+    
+    
+    
+    temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+    
+    if(percent==0.5){
+      ans[m] <- (sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)-floor(length(temp3)*percent)))/p3
+    }
+    else{
+      ans[m] <- (sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
+      
+      #print("########################")
+      #print(length(temp3) - ceiling(length(temp3)*(1-percent))+1  )
+      #print(ceiling(length(temp3)*percent))   
+      #print("########################")
+      
+    }
+    
+    names(ans)[m] <- row.names(d)[i]    
+    
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(data.frame(los_ret = ans))
+}
