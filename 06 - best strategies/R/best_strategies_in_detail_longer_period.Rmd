@@ -1,0 +1,659 @@
+---
+title: "БРИК - таблицы по лучшим стратегиям (25.02.2016)"
+output:
+  html_document:
+      pandoc_args: [
+      "+RTS", "-K64m",
+      "-RTS"
+    ]
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+setwd("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/")
+#setwd("I:/12 - ЛАФР/05 - reverse/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+source("R/reality_func2.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+#source("I:\12 - ЛАФР\05 - reverse\R\reality_func2.R")
+n.graph <- 0
+n.table <- 0
+
+PATH <- "/home/nazarov/02-fmlab.hse.ru/"
+
+#############################################################################
+# Константы
+# перебор от 1 до 12 мес , ждем от 0 до 8 недель, держим от 1 до 24 мес
+# таким образом  последние 25 месяцев понадобятся только для одной модели
+# Шаг для подсчета разниц в группах победителей и проигравших
+STEP=1
+# Периоды отбора (в месяцах), удержания (в неделях), инвестирования (в месяцах)
+UP1=12
+UP2=8
+UP3=24
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+>Период отслеживания менялся от  **`r 1`** месяца до  **`r 12`**
+
+>Период ожидания менялся от  **`r 0`**  до  **`r 8`** недель
+
+>Период инвестирования менялся от  **`r 1`** месяца до  **`r 24`**
+
+>Рассматривалось 4 процентили  **`r 0.5`**,  **`r 0.3`** ,  **`r 0.2`**,  **`r 0.1`**     
+ <p>
+ <br />
+ </p>  
+
+## _____________________________Китай________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "05 - reverse/data/5 days china/china_price_Fri.xlsx",sep = "")), sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **520** 
+
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("/media/nick/Transcend/temp/results/china_best.RDS") # читаем из файла что там есть 
+
+mylist <- readRDS(paste(PATH, "06 - best strategies/results/china_best.RDS",sep = "")) # читаем из файла что там есть 
+
+result.data <- mylist[[1]]
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = T),]
+  
+p1_mean_max <- order_by_mean[1,4] 
+p2_mean_max <- order_by_mean[1,5] 
+p3_mean_max <- order_by_mean[1,6] 
+percent_mean_max <- order_by_mean[1,7] 
+result_return_mean_max <- order_by_mean[1,1] 
+t_stat_mean_max <- order_by_mean[1,2] 
+p_value_mean_max <- order_by_mean[1,3]
+N_mean_max <- (nrow(resultDataFull)-(1+p3_mean_max *4))%/%STEP 
+return_with_date <- ret_with_date (p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.winner<- ret.winner(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.loser<- ret.loser(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+
+result_with_date_mean_max <-return_with_date
+result_with_date_mean_max$Win <- return.winner
+result_with_date_mean_max$Los <- return.loser
+result_with_date_mean_max$Delta <- return.winner-return.loser
+
+
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = F),]
+#order_by_t <- result.data[order(result.data[,2],decreasing = F),]
+  
+p1_mean_min <- order_by_mean[1,4] 
+p2_mean_min <- order_by_mean[1,5] 
+p3_mean_min <- order_by_mean[1,6] 
+percent_mean_min <- order_by_mean[1,7] 
+result_return_mean_min <- order_by_mean[1,1] 
+t_stat_mean_min <- order_by_mean[1,2] 
+p_value_mean_min <- order_by_mean[1,3]
+
+N_mean_min<- (nrow(resultDataFull)-(1+p3_mean_min*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.winner<- ret.winner(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.loser<- ret.loser(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+
+result_with_date_mean_min <-return_with_date
+result_with_date_mean_min$Win <- return.winner
+result_with_date_mean_min$Los <- return.loser
+result_with_date_mean_min$Delta <- return.winner-return.loser
+
+order_by_t <- result.data[order(abs(result.data[,2]),decreasing = T),]
+
+p1_t <- order_by_t[1,4] 
+p2_t <- order_by_t[1,5] 
+p3_t <- order_by_t[1,6] 
+percent_t <- order_by_t[1,7] 
+result_return_t <- order_by_t[1,1] 
+t_stat_t <- order_by_t[1,2] 
+p_value_t <- order_by_t[1,3] 
+N_t <- (nrow(resultDataFull)-(1+p3_t*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_t/4 , p2_t , p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.winner<- ret.winner(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.loser<- ret.loser(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+
+result_with_date_t <-return_with_date
+result_with_date_t$Win <- return.winner
+result_with_date_t$Los <- return.loser
+result_with_date_t$Delta <- return.winner-return.loser
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
+<p>
+<br />
+</p> 
+
+>Параметры лучшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_max`**, p2 =**`r p2_mean_max`**, p3 =**`r p3_mean_max`**, percent =**`r percent_mean_max`**,  result return =**`r result_return_mean_max`**,  t-stat =**`r t_stat_mean_max`**, p-value =**`r p_value_mean_max`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_max,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+#datatable(result_with_date_mean_max, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры худшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_min`**, p2 =**`r p2_mean_min`**, p3 =**`r p3_mean_min`**, percent =**`r percent_mean_min`**,  result return =**`r result_return_mean_min`**,  t-stat =**`r t_stat_mean_min`**, p-value =**`r p_value_mean_min`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Худшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_min,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+#datatable(result_with_date_mean_min, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры лучшей по t-статистике стратегии  (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_t`**, p2 =**`r p2_t`**, p3 =**`r p3_t`**, percent =**`r percent_t`**,  result return =**`r result_return_t`**, t-stat =**`r t_stat_t`**, p-value =**`r p_value_t`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по t-статистике стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_t,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_t))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+## _____________________________Индия________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "05 - reverse/data/5 days india/india_price_Fri.xlsx",sep = "")),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **520** 
+
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("/media/nick/Transcend/temp/results/china_best.RDS") # читаем из файла что там есть 
+
+mylist <- readRDS(paste(PATH, "06 - best strategies/results/india_best.RDS",sep = "")) # читаем из файла что там есть 
+
+result.data <- mylist[[1]]
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = T),]
+  
+p1_mean_max <- order_by_mean[1,4] 
+p2_mean_max <- order_by_mean[1,5] 
+p3_mean_max <- order_by_mean[1,6] 
+percent_mean_max <- order_by_mean[1,7] 
+result_return_mean_max <- order_by_mean[1,1] 
+t_stat_mean_max <- order_by_mean[1,2] 
+p_value_mean_max <- order_by_mean[1,3]
+N_mean_max <- (nrow(resultDataFull)-(1+p3_mean_max *4))%/%STEP 
+return_with_date <- ret_with_date (p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.winner<- ret.winner(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.loser<- ret.loser(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+
+result_with_date_mean_max <-return_with_date
+result_with_date_mean_max$Win <- return.winner
+result_with_date_mean_max$Los <- return.loser
+result_with_date_mean_max$Delta <- return.winner-return.loser
+
+
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = F),]
+#order_by_t <- result.data[order(result.data[,2],decreasing = F),]
+  
+p1_mean_min <- order_by_mean[1,4] 
+p2_mean_min <- order_by_mean[1,5] 
+p3_mean_min <- order_by_mean[1,6] 
+percent_mean_min <- order_by_mean[1,7] 
+result_return_mean_min <- order_by_mean[1,1] 
+t_stat_mean_min <- order_by_mean[1,2] 
+p_value_mean_min <- order_by_mean[1,3]
+
+N_mean_min<- (nrow(resultDataFull)-(1+p3_mean_min*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.winner<- ret.winner(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.loser<- ret.loser(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+
+result_with_date_mean_min <-return_with_date
+result_with_date_mean_min$Win <- return.winner
+result_with_date_mean_min$Los <- return.loser
+result_with_date_mean_min$Delta <- return.winner-return.loser
+
+order_by_t <- result.data[order(abs(result.data[,2]),decreasing = T),]
+
+p1_t <- order_by_t[1,4] 
+p2_t <- order_by_t[1,5] 
+p3_t <- order_by_t[1,6] 
+percent_t <- order_by_t[1,7] 
+result_return_t <- order_by_t[1,1] 
+t_stat_t <- order_by_t[1,2] 
+p_value_t <- order_by_t[1,3] 
+N_t <- (nrow(resultDataFull)-(1+p3_t*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_t/4 , p2_t , p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.winner<- ret.winner(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.loser<- ret.loser(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+
+result_with_date_t <-return_with_date
+result_with_date_t$Win <- return.winner
+result_with_date_t$Los <- return.loser
+result_with_date_t$Delta <- return.winner-return.loser
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
+<p>
+<br />
+</p> 
+
+>Параметры лучшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_max`**, p2 =**`r p2_mean_max`**, p3 =**`r p3_mean_max`**, percent =**`r percent_mean_max`**,  result return =**`r result_return_mean_max`**,  t-stat =**`r t_stat_mean_max`**, p-value =**`r p_value_mean_max`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_max,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+#datatable(result_with_date_mean_max, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры худшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_min`**, p2 =**`r p2_mean_min`**, p3 =**`r p3_mean_min`**, percent =**`r percent_mean_min`**,  result return =**`r result_return_mean_min`**,  t-stat =**`r t_stat_mean_min`**, p-value =**`r p_value_mean_min`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Худшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_min,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+#datatable(result_with_date_mean_min, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры лучшей по t-статистике стратегии  (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_t`**, p2 =**`r p2_t`**, p3 =**`r p3_t`**, percent =**`r percent_t`**,  result return =**`r result_return_t`**, t-stat =**`r t_stat_t`**, p-value =**`r p_value_t`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по t-статистике стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_t,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_t))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+## _____________________________Россия________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "05 - reverse/data/stocks_russia.xlsx",sep = "")),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **520** 
+
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("/media/nick/Transcend/temp/results/china_best.RDS") # читаем из файла что там есть 
+
+mylist <- readRDS(paste(PATH, "06 - best strategies/results/russia_best.RDS",sep = "")) # читаем из файла что там есть 
+
+result.data <- mylist[[1]]
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = T),]
+  
+p1_mean_max <- order_by_mean[1,4] 
+p2_mean_max <- order_by_mean[1,5] 
+p3_mean_max <- order_by_mean[1,6] 
+percent_mean_max <- order_by_mean[1,7] 
+result_return_mean_max <- order_by_mean[1,1] 
+t_stat_mean_max <- order_by_mean[1,2] 
+p_value_mean_max <- order_by_mean[1,3]
+N_mean_max <- (nrow(resultDataFull)-(1+p3_mean_max *4))%/%STEP 
+return_with_date <- ret_with_date (p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.winner<- ret.winner(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.loser<- ret.loser(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+
+result_with_date_mean_max <-return_with_date
+result_with_date_mean_max$Win <- return.winner
+result_with_date_mean_max$Los <- return.loser
+result_with_date_mean_max$Delta <- return.winner-return.loser
+
+
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = F),]
+#order_by_t <- result.data[order(result.data[,2],decreasing = F),]
+  
+p1_mean_min <- order_by_mean[1,4] 
+p2_mean_min <- order_by_mean[1,5] 
+p3_mean_min <- order_by_mean[1,6] 
+percent_mean_min <- order_by_mean[1,7] 
+result_return_mean_min <- order_by_mean[1,1] 
+t_stat_mean_min <- order_by_mean[1,2] 
+p_value_mean_min <- order_by_mean[1,3]
+
+N_mean_min<- (nrow(resultDataFull)-(1+p3_mean_min*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.winner<- ret.winner(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.loser<- ret.loser(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+
+result_with_date_mean_min <-return_with_date
+result_with_date_mean_min$Win <- return.winner
+result_with_date_mean_min$Los <- return.loser
+result_with_date_mean_min$Delta <- return.winner-return.loser
+
+order_by_t <- result.data[order(abs(result.data[,2]),decreasing = T),]
+
+p1_t <- order_by_t[1,4] 
+p2_t <- order_by_t[1,5] 
+p3_t <- order_by_t[1,6] 
+percent_t <- order_by_t[1,7] 
+result_return_t <- order_by_t[1,1] 
+t_stat_t <- order_by_t[1,2] 
+p_value_t <- order_by_t[1,3] 
+N_t <- (nrow(resultDataFull)-(1+p3_t*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_t/4 , p2_t , p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.winner<- ret.winner(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.loser<- ret.loser(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+
+result_with_date_t <-return_with_date
+result_with_date_t$Win <- return.winner
+result_with_date_t$Los <- return.loser
+result_with_date_t$Delta <- return.winner-return.loser
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
+<p>
+<br />
+</p> 
+
+>Параметры лучшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_max`**, p2 =**`r p2_mean_max`**, p3 =**`r p3_mean_max`**, percent =**`r percent_mean_max`**,  result return =**`r result_return_mean_max`**,  t-stat =**`r t_stat_mean_max`**, p-value =**`r p_value_mean_max`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_max,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+#datatable(result_with_date_mean_max, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры худшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_min`**, p2 =**`r p2_mean_min`**, p3 =**`r p3_mean_min`**, percent =**`r percent_mean_min`**,  result return =**`r result_return_mean_min`**,  t-stat =**`r t_stat_mean_min`**, p-value =**`r p_value_mean_min`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Худшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_min,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+#datatable(result_with_date_mean_min, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры лучшей по t-статистике стратегии  (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_t`**, p2 =**`r p2_t`**, p3 =**`r p3_t`**, percent =**`r percent_t`**,  result return =**`r result_return_t`**, t-stat =**`r t_stat_t`**, p-value =**`r p_value_t`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по t-статистике стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_t,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_t))) ) 
+```
+
+<p>
+<br /> 
+</p>  
+## _____________________________Бразилия________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "05 - reverse/data/5 days brazil/brazil_price_Fri.xlsx",sep = "")),sheet=1)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+```   
+
+>Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **520** 
+
+<p>
+<br />
+<br />
+</p>  
+```{r, echo=FALSE, results='asis'}
+#mylist <- readRDS("/media/nick/Transcend/temp/results/china_best.RDS") # читаем из файла что там есть 
+
+mylist <- readRDS(paste(PATH, "06 - best strategies/results/brazil_best.RDS",sep = "")) # читаем из файла что там есть 
+
+result.data <- mylist[[1]]
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = T),]
+  
+p1_mean_max <- order_by_mean[1,4] 
+p2_mean_max <- order_by_mean[1,5] 
+p3_mean_max <- order_by_mean[1,6] 
+percent_mean_max <- order_by_mean[1,7] 
+result_return_mean_max <- order_by_mean[1,1] 
+t_stat_mean_max <- order_by_mean[1,2] 
+p_value_mean_max <- order_by_mean[1,3]
+N_mean_max <- (nrow(resultDataFull)-(1+p3_mean_max *4))%/%STEP 
+return_with_date <- ret_with_date (p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.winner<- ret.winner(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+return.loser<- ret.loser(p1_mean_max/4 , p2_mean_max , p3_mean_max/4 , STEP, N_mean_max, resultDataFull, UP1, UP2, percent_mean_max) 
+
+result_with_date_mean_max <-return_with_date
+result_with_date_mean_max$Win <- return.winner
+result_with_date_mean_max$Los <- return.loser
+result_with_date_mean_max$Delta <- return.winner-return.loser
+
+
+
+order_by_mean <- result.data[order(result.data[,1],decreasing = F),]
+#order_by_t <- result.data[order(result.data[,2],decreasing = F),]
+  
+p1_mean_min <- order_by_mean[1,4] 
+p2_mean_min <- order_by_mean[1,5] 
+p3_mean_min <- order_by_mean[1,6] 
+percent_mean_min <- order_by_mean[1,7] 
+result_return_mean_min <- order_by_mean[1,1] 
+t_stat_mean_min <- order_by_mean[1,2] 
+p_value_mean_min <- order_by_mean[1,3]
+
+N_mean_min<- (nrow(resultDataFull)-(1+p3_mean_min*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.winner<- ret.winner(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+return.loser<- ret.loser(p1_mean_min/4 , p2_mean_min , p3_mean_min/4 , STEP, N_mean_min, resultDataFull, UP1, UP2, percent_mean_min) 
+
+result_with_date_mean_min <-return_with_date
+result_with_date_mean_min$Win <- return.winner
+result_with_date_mean_min$Los <- return.loser
+result_with_date_mean_min$Delta <- return.winner-return.loser
+
+order_by_t <- result.data[order(abs(result.data[,2]),decreasing = T),]
+
+p1_t <- order_by_t[1,4] 
+p2_t <- order_by_t[1,5] 
+p3_t <- order_by_t[1,6] 
+percent_t <- order_by_t[1,7] 
+result_return_t <- order_by_t[1,1] 
+t_stat_t <- order_by_t[1,2] 
+p_value_t <- order_by_t[1,3] 
+N_t <- (nrow(resultDataFull)-(1+p3_t*4))%/%STEP 
+
+return_with_date <- ret_with_date (p1_t/4 , p2_t , p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.winner<- ret.winner(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+return.loser<- ret.loser(p1_t/4 , p2_t, p3_t/4 , STEP, N_t, resultDataFull, UP1, UP2, percent_t) 
+
+result_with_date_t <-return_with_date
+result_with_date_t$Win <- return.winner
+result_with_date_t$Los <- return.loser
+result_with_date_t$Delta <- return.winner-return.loser
+
+```
+
+
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
+<p>
+<br />
+</p> 
+
+>Параметры лучшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_max`**, p2 =**`r p2_mean_max`**, p3 =**`r p3_mean_max`**, percent =**`r percent_mean_max`**,  result return =**`r result_return_mean_max`**,  t-stat =**`r t_stat_mean_max`**, p-value =**`r p_value_mean_max`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_max,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+#datatable(result_with_date_mean_max, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_max))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры худшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_min`**, p2 =**`r p2_mean_min`**, p3 =**`r p3_mean_min`**, percent =**`r percent_mean_min`**,  result return =**`r result_return_mean_min`**,  t-stat =**`r t_stat_mean_min`**, p-value =**`r p_value_mean_min`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Худшая по доходности стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_mean_min,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+#datatable(result_with_date_mean_min, filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_mean_min))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+
+
+
+>Параметры лучшей по t-статистике стратегии  (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_t`**, p2 =**`r p2_t`**, p3 =**`r p3_t`**, percent =**`r percent_t`**,  result return =**`r result_return_t`**, t-stat =**`r t_stat_t`**, p-value =**`r p_value_t`**
+<p>
+<br />
+</p> 
+
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Лучшая по t-статистике стратегия ** 
+```{r, echo=FALSE, results='asis'}
+datatable(round(result_with_date_t,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result_with_date_t))) ) 
+```
+
+<p>
+<br /> 
+</p>  
