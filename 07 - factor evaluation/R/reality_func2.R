@@ -32,6 +32,10 @@ id_coeff <- function (datatable, p1, p2, i) {
   # Returns:
   #   Вектор  - названия компаний - ранги
   sgn <- sign(as.numeric(datatable[i-p2,]) - as.numeric(datatable[i-4*p1-p2,]))
+  
+  cat(i, nrow(datatable[(i-4*p1-p2):(i-p2),] ),  nrow(datatable[(i-4*p1-p2-1):(i-p2-1),]))
+  
+  
   daily_returns <- datatable[(i-4*p1-p2):(i-p2),] - datatable[(i-4*p1-p2-1):(i-p2-1),]
   
   #print(daily_returns)
@@ -95,7 +99,7 @@ ret_1 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   # набор дельт  - ans, считает через корень доходность
   #средняя месячная доходность =(1+доходность за n месяцев)^(1/n)-1
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i <- UP1*4+2+UP2
   m <- 1 
   while(i < N){
     temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 1)
@@ -113,7 +117,7 @@ ret_1 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
       #средняя месячная доходность =(1+доходность за n месяцев)^(1/n)-1
     }
     
-    names(ans)[m] <- row.names(d)[i]    
+    names(ans)[m] <- row.names(d2)[i]    
     
     m <- m+1
     i<-STEP+i  
