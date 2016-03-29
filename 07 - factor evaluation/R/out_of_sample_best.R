@@ -156,7 +156,8 @@ for (p3 in low:up) {
   for (percent in c(0.3) ){
     for (p1 in 1:UP1 ){   
       for (p2 in 0:UP2 ){  
-        #вектор дельт    
+        #вектор дельт   
+        cat(p1,p2,p3)
         temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent,1) 
         #return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         #return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
@@ -189,12 +190,22 @@ saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results
 start_time
 end_time
 
+###############################################################################
+# FOR TEST
+###############################################################################
+12  1	24
+12  0	24
 
+source("R/reality_func2.R")
+temp_for_T <-  returnWrapper(3, 0, 6, STEP, N, price_d5, UP1, UP2, 0.3, 1) 
 
+names(temp_for_T) <- NULL
+str(temp_for_T )
+sum (temp_for_T )
+is.na(temp_for_T)
 
-
-
-
-
+for(i in 1:length(temp_for_T)){
+  if(is.nan(temp_for_T [i])) print(i)
+}
 
 
