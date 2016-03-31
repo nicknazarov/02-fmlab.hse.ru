@@ -16,6 +16,7 @@ library(XLConnect)
 #setwd("/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/")
 setwd("/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/")
 source("R/reality_func2.R")
+RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/"
 
 
 #############################################################################
@@ -106,7 +107,7 @@ price_d5 <-price_d5[,-1]
 #############################################################################
 # Создаем тестовое множество
 for_test <- list(price_d5, 0.7*nrow(price_d5) )
-price_d5  <- price_d5[1:(0.7*nrow(price_d5)),]
+price_d5  <- price_d5[1:floor(0.7*nrow(price_d5)),]
 
 #############################################################################
 # Константы
@@ -157,8 +158,8 @@ for (p3 in low:up) {
     for (p1 in 1:UP1 ){   
       for (p2 in 0:UP2 ){  
         #вектор дельт   
-        cat(p1,p2,p3)
-        temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent,1) 
+        cat(p1,p2,p3, "/n")
+        temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent,2) 
         #return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         #return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         n <- length(temp)
@@ -183,9 +184,16 @@ temp2 <-do.call("rbind", temp1)
 #colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent","winners","losers", "Amount_of_negative")
 colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","percent", "Amount_of_negative")
 
+##################################################################
+#Вектор доходностей для тестового множества
+##################################################################
+out_of_sample_ret <- returnWrapper(p1, p2, p3,  ceiling(for_test[[2]]), N, for_test[[1]], UP1, UP2, percent,3) 
+
+
 #Сохранение результатов
-short_res <- list(data=temp2, num=N, n_portf = T)  # список ценных объектов
-saveRDS(file = paste("/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/",country_name_eng,"_best",".RDS",sep=""),short_res) # сохраняем всё ценное в файл
+results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test,out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
+saveRDS(file = paste(RESULT_PATH ,"result_out_of_sample_",country_name_eng,"_f1_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
+
 
 start_time
 end_time

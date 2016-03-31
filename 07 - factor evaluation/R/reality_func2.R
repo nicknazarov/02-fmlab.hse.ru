@@ -5,6 +5,12 @@ returnWrapper <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent, flag){
                 if(flag==1){
                            return (ret_1(p1, p2, p3, STEP, N, d2, UP1, UP2, percent))
                 }
+                if(flag==2){
+                  return (ret_2(p1, p2, p3, STEP, N, d2, UP1, UP2, percent))
+                }
+                if(flag==3){
+                  return (ret_3(p1, p2, p3, STEP, N, d2, UP1, UP2, percent))
+                }
 
 }
 
@@ -121,8 +127,88 @@ ret_1 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
           }   
           return(ans)
 }
+ret_2 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+          # набор дельт  - ans, считает через корень доходность
+          #средняя месячная доходность - классическая схема
+          ans <- c() 
+          i <- UP1*4+2+UP2
+          m <- 1 
+          while(i < N){
+                      temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 1)
+                      temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+                      
+                      if(percent==0.5){
+                        ret_inv <- sum(temp3[1:floor(length(temp3)*percent)] )/ floor(length(temp3)*percent)- 
+                          sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)
+                                                                                         -floor(length(temp3)*percent))
+                        #ans[m] <- (1 + ret_inv)^(1/p3) - 1
+                         ans[m] <- (sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)-floor(length(temp3)*percent)))/p3
+            }
+            else{
+                      ret_inv <- sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
+                        sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))])/ceiling(length(temp3)*percent)
+                      #ans[m] <- (1 + ret_inv)^(1/p3) - 1 
+                      ans[m] <- (sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
+                      #средняя месячная доходность =(1+доходность за n месяцев)^(1/n)-1
+            }
+            
+            #if(m==312){
+            #            print(temp3)
+            #            print (ret_inv)
+            #            print (ans[m])
+            # }
+            
+            names(ans)[m] <- row.names(d2)[i]    
+            m <- m+1
+            i<-STEP+i  
+          }   
+          return(ans)
+}
 
 
+ret_3 <- function (p1, p2, p3, i_start, N, d2, UP1, UP2, percent)
+{           
+          # подсчитываем на тестовом множестве вектор доходностей
+          # набор дельт  - ans, считает через корень доходность
+          # средняя месячная доходность - классическая схема
+          ans <- c() 
+          i <- i_start
+          m <- 1 
+          STEP  <- 1
+          while(i < N){
+                      temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 1)
+                      temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+                      
+                      if(percent==0.5){
+                        ret_inv <- sum(temp3[1:floor(length(temp3)*percent)] )/ floor(length(temp3)*percent)- 
+                          sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)
+                                                                                         -floor(length(temp3)*percent))
+                        #ans[m] <- (1 + ret_inv)^(1/p3) - 1
+                        ans[m] <- (sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /
+                                     (length(temp3)-floor(length(temp3)*percent)))/p3
+            }
+            else{
+                      ret_inv <- sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
+                        sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))])/ceiling(length(temp3)*percent)
+                      #ans[m] <- (1 + ret_inv)^(1/p3) - 1 
+                      ans[m] <- (sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /
+                                   ceiling(length(temp3)*percent))/p3
+                      #средняя месячная доходность =(1+доходность за n месяцев)^(1/n)-1
+            }
+            
+            #if(m==312){
+            #            print(temp3)
+            #            print (ret_inv)
+            #            print (ans[m])
+            # }
+            
+            names(ans)[m] <- row.names(d2)[i]    
+            m <- m+1
+            i<-STEP+i  
+          }   
+          return(ans)
+}
 ###########################################################################################
 P_R <- function (R,T,q){
   
