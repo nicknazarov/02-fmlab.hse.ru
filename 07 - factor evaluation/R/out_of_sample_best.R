@@ -16,7 +16,7 @@ library(XLConnect)
 #setwd("/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/")
 setwd("/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/")
 source("R/reality_func2.R")
-RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/06 - best strategies/results/"
+RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
 
 
 #############################################################################
@@ -119,7 +119,7 @@ STEP=1
 UP1=12
 UP2=8
 UP3=12
-
+N_test <- (nrow(for_test[[1]])-(2+UP3*4))%/%STEP 
 N <- (nrow(price_d5)-(2+UP3*4))%/%STEP 
 #############################################################################
 #TESTING
@@ -187,11 +187,17 @@ colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","p
 ##################################################################
 #Вектор доходностей для тестового множества
 ##################################################################
-out_of_sample_ret <- returnWrapper(p1, p2, p3,  ceiling(for_test[[2]]), N, for_test[[1]], UP1, UP2, percent,3) 
+percent <- 0.3
+p1_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 4]/4 
+p2_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 5] 
+p3_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 6]/4
 
-
+out_of_sample_ret <- returnWrapper(p1_sharp[1], p2_sharp[1], p3_sharp[1],  ceiling(for_test[[2]]), N_test, for_test[[1]], UP1, UP2, percent,3) 
+tttt<- data.frame(out_of_sample_ret) 
+hist(out_of_sample_ret)
+mean(out_of_sample_ret)/p3_sharp[1]
 #Сохранение результатов
-results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test,out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
+results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test, out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
 saveRDS(file = paste(RESULT_PATH ,"result_out_of_sample_",country_name_eng,"_f1_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
 
 
@@ -203,6 +209,11 @@ end_time
 ###############################################################################
 12  1	24
 12  0	24
+
+out_of_sample_ret 
+
+ceiling(for_test[[2]])
+tttt2 <- for_test[[1]]  
 
 source("R/reality_func2.R")
 temp_for_T <-  returnWrapper(3, 0, 6, STEP, N, price_d5, UP1, UP2, 0.3, 1) 

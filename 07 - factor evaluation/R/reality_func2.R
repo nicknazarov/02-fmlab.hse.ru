@@ -9,7 +9,8 @@ returnWrapper <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent, flag){
                   return (ret_2(p1, p2, p3, STEP, N, d2, UP1, UP2, percent))
                 }
                 if(flag==3){
-                  return (ret_3(p1, p2, p3, STEP, N, d2, UP1, UP2, percent))
+                  i_start <- STEP
+                  return (ret_3(p1, p2, p3, i_start , N, d2, UP1, UP2, percent))
                 }
 
 }
