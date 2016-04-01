@@ -212,7 +212,7 @@ end_time
 
 out_of_sample_ret 
 
-ceiling(for_test[[2]])
+i_start <- ceiling(for_test[[2]])
 tttt2 <- for_test[[1]]  
 
 source("R/reality_func2.R")
@@ -227,4 +227,6 @@ for(i in 1:length(temp_for_T)){
   if(is.nan(temp_for_T [i])) print(i)
 }
 
-
+source("R/reality_func2.R")
+temp_for_T <-  returnWrapper(10, 8, 11, i_start, N_test, for_test[[1]] , UP1, UP2, 0.3, 3) 
+mean(temp_for_T)/11
