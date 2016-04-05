@@ -17,8 +17,7 @@ library(XLConnect)
 setwd("/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/")
 source("R/reality_func2.R")
 RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
-
-
+rankingFactor <-0
 #############################################################################
 # Параметры, которые зависят от изучаемой страны
 
@@ -106,8 +105,9 @@ row.names(price_d5) <- price_d5[,1]
 price_d5 <-price_d5[,-1]
 #############################################################################
 # Создаем тестовое множество
-for_test <- list(price_d5, 0.7*nrow(price_d5) )
-price_d5  <- price_d5[1:floor(0.7*nrow(price_d5)),]
+per_learn <- 1
+for_test <- list(price_d5, per_learn*nrow(price_d5) )
+price_d5  <- price_d5[1:floor(per_learn*nrow(price_d5)),]
 
 #############################################################################
 # Константы
@@ -126,7 +126,7 @@ N <- (nrow(price_d5)-(2+UP3*4))%/%STEP
 
 
 #############################################################################
-temp_for_T <-  returnWrapper(4, 0, 4, STEP, N, price_d5, UP1, UP2, 0.1, 1) 
+temp_for_T <-  returnWrapper(4, 0, 4, STEP, N, price_d5, UP1, UP2, 0.1, 2) 
 T <- length(temp_for_T)
 
 # N - с учетом отступа
@@ -147,7 +147,7 @@ clusterExport(cl,"infert") # передача данных внутрь клас
 clusterEvalQ(cl,source("R/reality_func2.R")) # загрузка функций в кластер
 #clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
 start_time <- Sys.time()
-temp1 <- parLapply(cl,  1:4, function(temp_p3, UP1, UP2, UP3, STEP, resultDataFull, N) # параллельная версия sapply
+temp1 <- parLapply(cl,  1:4, function(temp_p3, UP1, UP2, UP3, STEP, resultDataFull, N, rankingFactor) # параллельная версия sapply
 {    m <- 1  
 #realityCheckData <- data.frame(1,1,1,1,1,1,1,1,1,1)
 realityCheckData <- data.frame(1,1,1,1,1,1,1,1)
@@ -159,7 +159,7 @@ for (p3 in low:up) {
       for (p2 in 0:UP2 ){  
         #вектор дельт   
         cat(p1,p2,p3, "/n")
-        temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent,2) 
+        temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent, rankingFactor) 
         #return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         #return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         n <- length(temp)
@@ -174,7 +174,7 @@ for (p3 in low:up) {
 }
 return (realityCheckData)
 
-}, UP1, UP2, UP3, STEP, resultDataFull, N)
+}, UP1, UP2, UP3, STEP, resultDataFull, N, rankingFactor)
 stopCluster(cl)
 
 end_time <- Sys.time()
@@ -197,8 +197,13 @@ tttt<- data.frame(out_of_sample_ret)
 hist(out_of_sample_ret)
 mean(out_of_sample_ret)/p3_sharp[1]
 #Сохранение результатов
-results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test, out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
-saveRDS(file = paste(RESULT_PATH ,"result_out_of_sample_",country_name_eng,"_f1_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
+if(per_learn!=1){
+  results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test, out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
+}else{
+  results <- list(data=temp2, num=N, n_portf = T)  # список ценных объектов
+}
+
+saveRDS(file = paste(RESULT_PATH ,"result_out_of_sample_learn_",per_learn, "_",country_name_eng,"_f",rankingFactor,"_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
 
 
 start_time
