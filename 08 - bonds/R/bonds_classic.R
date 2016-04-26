@@ -79,6 +79,8 @@ country_name_eng <- "russia_bonds"
 #price_d5<- read.csv("data/5 days malaysia/stocks_malaysia.csv")
 #############################################################################
 price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
+
+
 #price_d5 <- read.csv(file="data/stocks_russia.csv", header=TRUE)
 
 #price_d5<- readWorksheet(loadWorkbook("data/stocks_russia.xlsx"),sheet=1)
