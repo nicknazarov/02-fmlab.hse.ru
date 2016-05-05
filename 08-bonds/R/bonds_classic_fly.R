@@ -11,8 +11,8 @@ library(parallel)
 #    install.packages("XLConnect")
 #    library(XLConnect)
 #}
-source("~/08-bonds/R/reality_func2.R")
-RESULT_PATH <- "~/"
+source("~/workdir/08-bonds/R/reality_func2.R")
+RESULT_PATH <- "~/workdir/"
 rankingFactor <- 0
 
 #############################################################################
@@ -23,7 +23,7 @@ country_name_eng <- "russia_bonds"
 # Загрузка 
 
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
-price_d5<- read.csv(file="~/bonds_long.csv", header=TRUE)
+price_d5<- read.csv(file="~/workdir/bonds_long.csv", header=TRUE)
 #/home/nazarov/10-FlyElephant/
 #price_d5<- read.csv(file="/home/nazarov/10-FlyElephant/bonds.csv", header=TRUE)
 
@@ -63,7 +63,7 @@ resultDataFull <- price_d5
 print("Параллельное выполнение")
 cl <- makeCluster(getOption("cl.cores", 4)) # создание кластера из четырёх ядер процессора
 clusterExport(cl,"infert") # передача данных внутрь кластера
-clusterEvalQ(cl,source("~/workdir/reality_func2.R")) # загрузка функций в кластер
+clusterEvalQ(cl,source("~/workdir/08-bonds/R/reality_func2.R")) # загрузка функций в кластер
 #clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
 start_time <- Sys.time()
 temp1 <- parLapply(cl,  1:4, function(temp_p3, UP1, UP2, UP3, STEP, resultDataFull, N, rankingFactor) # параллельная версия sapply
