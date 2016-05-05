@@ -38,7 +38,7 @@ ret.winner <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   
   # набор дельт  - ans
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i<-UP1*4+2+UP2
   m <- 1 
   while(i < N){
     
@@ -98,7 +98,7 @@ ret.loser <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   
   # набор дельт  - ans
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i<-UP1*4+2+UP2
   m <- 1 
   while(i < N){
     
@@ -279,7 +279,7 @@ ret_with_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   #invest_date <- c()
   # набор дельт  - ans
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i<-UP1*4+2+UP2
   m <- 1 
   while(i < N){
     
@@ -342,7 +342,7 @@ ret.winner_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   
   # набор дельт  - ans
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i<-UP1*4+2+UP2
   m <- 1 
   while(i < N){
     
@@ -402,7 +402,7 @@ ret.loser_date <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
   
   # набор дельт  - ans
   ans <- c() 
-  i<-UP1*4+1+UP2
+  i<-UP1*4+2+UP2
   m <- 1 
   while(i < N){
     
