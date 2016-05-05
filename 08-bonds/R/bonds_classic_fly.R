@@ -11,8 +11,8 @@ library(parallel)
 #    install.packages("XLConnect")
 #    library(XLConnect)
 #}
-source("~/workdir/08-bonds/R/reality_func2.R")
-RESULT_PATH <- "~/workdir/"
+source("~/08-bonds/R/reality_func2.R")
+RESULT_PATH <- "~/"
 rankingFactor <- 0
 
 #############################################################################
@@ -23,7 +23,7 @@ country_name_eng <- "russia_bonds"
 # Загрузка 
 
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
-price_d5<- read.csv(file="~/workdir/bonds.csv", header=TRUE)
+price_d5<- read.csv(file="~/bonds_long.csv", header=TRUE)
 #/home/nazarov/10-FlyElephant/
 #price_d5<- read.csv(file="/home/nazarov/10-FlyElephant/bonds.csv", header=TRUE)
 
@@ -73,7 +73,7 @@ realityCheckData <- data.frame(1,1,1,1,1,1,1,1)
 low <- (temp_p3-1)*3+1
 up <- temp_p3*3
 for (p3 in low:up) {  
-  for (percent in c(0.1,0.3,0.4,0.5) ){
+  for (percent in c(0.1, 0.2, 0.3, 0.4, 0.5) ){
     for (p1 in 1:UP1 ){   
       for (p2 in 0:UP2 ){  
         #вектор дельт   
@@ -110,7 +110,7 @@ results <- list(data=temp2, num=N, n_portf = T)  # список ценных о�
 #rankingFactor <- 0
 #country_name_eng <- "russia_bonds"
 #getwd()
-saveRDS(file ="bonds_result.RDS",results) # сохраняем всё ценное в файл
+saveRDS(file ="bonds_result_long.RDS",results) # сохраняем всё ценное в файл
 
 start_time
 end_time
