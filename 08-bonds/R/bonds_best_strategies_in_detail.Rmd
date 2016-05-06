@@ -1,5 +1,5 @@
 ---
-title: "Bonds Russia (05.05.2016)"
+title: "Bonds Russia all (06.05.2016)"
 output:
   html_document:
       pandoc_args: [
@@ -60,15 +60,15 @@ UP3=12
 ```{r, include=FALSE}
 # Загружаем ранее сохраненные цены закрытия
 #resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "08 - #bonds/data/bonds.xls",sep = "")), sheet=1)
-resultDataFull <-  read.csv(file=paste0(PATH,"data/bonds.csv"), header=TRUE)
+resultDataFull <-  read.csv(file=paste0(PATH,"data/bonds_long.csv"), header=TRUE)
 row.names(resultDataFull) <- resultDataFull[,1]
 resultDataFull <-resultDataFull[,-1]
 N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
 
-mylist <- readRDS(paste(PATH, "results/result__russia_bonds_f0_2016-05-05_19:18:33.RDS",sep = "")) # читаем из файла что там есть 
+mylist <- readRDS(paste(PATH, "results/bonds_result_long.RDS",sep = "")) # читаем из файла что там есть 
 result.data <- mylist[[1]]
 ```   
->Количество исследумых компаний -- **`r ncol(resultDataFull)`** 
+>Количество исследумых облигаций -- **`r ncol(resultDataFull)`** 
 
 >Количество портфелей, использованных для подсчета средней доходности -- **`r mylist$n_portf`** 
 
@@ -162,7 +162,7 @@ result_with_date_t$Delta <- return.winner-return.loser
 ```
 
 
-
+## _______________________________________________________________
 
 >Параметры лучшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_max`**, p2 =**`r p2_mean_max`**, p3 =**`r p3_mean_max`**, percent =**`r percent_mean_max`**,  result return =**`r result_return_mean_max`**,  t-stat =**`r t_stat_mean_max`**, p-value =**`r p_value_mean_max`**
 <p>
@@ -170,8 +170,21 @@ result_with_date_t$Delta <- return.winner-return.loser
 </p> 
 
 
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
 
->!!!!!!!! mean **`r mean(result_with_date_mean_max[,1])`** стратегий
+####**Рисунок `r n.graph`. ** 
+
+```{r, echo=FALSE}
+
+hist(result_with_date_mean_max[,1],20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей",ylim = c(0, 100))
+
+```
+
+<p>
+<br /> 
+</p>  
 
 ```{r, echo=FALSE, results='asis'}
 n.table<-n.table+1
@@ -186,12 +199,28 @@ datatable(round(result_with_date_mean_max,6), filter = 'top',options = list(page
 <br /> 
 </p>   
 
-
+## _______________________________________________________________
 
 >Параметры худшей по средней доходности стратегии (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_mean_min`**, p2 =**`r p2_mean_min`**, p3 =**`r p3_mean_min`**, percent =**`r percent_mean_min`**,  result return =**`r result_return_mean_min`**,  t-stat =**`r t_stat_mean_min`**, p-value =**`r p_value_mean_min`**
 <p>
 <br />
 </p> 
+ 
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок `r n.graph`. ** 
+
+```{r, echo=FALSE}
+
+hist(result_with_date_mean_min[,1],20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей",ylim = c(0, 100))
+
+```
+
+<p>
+<br /> 
+</p>  
 
 ```{r, echo=FALSE, results='asis'}
 n.table<-n.table+1
@@ -206,12 +235,28 @@ datatable(round(result_with_date_mean_min,6), filter = 'top',options = list(page
 <br /> 
 </p>   
 
-
+## _______________________________________________________________
 
 >Параметры лучшей по t-статистике стратегии  (далее в неделях: исторический период p1, период ожидания p2, инвест период p3) p1 =**`r p1_t`**, p2 =**`r p2_t`**, p3 =**`r p3_t`**, percent =**`r percent_t`**,  result return =**`r result_return_t`**, t-stat =**`r t_stat_t`**, p-value =**`r p_value_t`**
 <p>
 <br />
 </p> 
+ 
+```{r, echo=FALSE, results='asis'}
+n.graph<-n.graph+1
+```
+
+####**Рисунок `r n.graph`. ** 
+
+```{r, echo=FALSE}
+
+hist(result_with_date_t[,1],20,col="gray", labels = TRUE, xlab = "Среднемесячная доходность", ylab = "Количество портфелей", main = "Распределение среднемесячных доходностей",ylim = c(0, 100))
+
+```
+
+<p>
+<br /> 
+</p>  
 
 ```{r, echo=FALSE, results='asis'}
 n.table<-n.table+1
