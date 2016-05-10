@@ -23,6 +23,7 @@ args <- commandArgs(trailingOnly = TRUE)
 result_file_name  <- args[1]
 file_name <- args[2]
 rankingFactor <- as.numeric(args[3])
+flag_load <- args[4]
 #############################################################################
 # Параметры, которые зависят от изучаемой страны
 #country_name_eng <- "europe_bonds"
@@ -32,7 +33,13 @@ rankingFactor <- as.numeric(args[3])
 
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
 #price_d5<- read.csv(file="~/workdir/europe_bonds.csv",  header=TRUE, sep = ";", dec = ",")
-price_d5<- read.csv(file=paste0("~/workdir/",file_name),  header=TRUE, sep = ";", dec = ",")
+if(flag_load =="c"){
+  price_d5<- read.csv(file=paste0("~/workdir/",file_name),  header=TRUE, sep = ";", dec = ",")
+}
+if(flag_load =="p"){
+  price_d5<- read.csv(file=paste0("~/workdir/",file_name),  header=TRUE)
+}
+
 
 #/home/nazarov/10-FlyElephant/
 #price_d5<- read.csv(file="/home/nazarov/10-FlyElephant/bonds.csv", header=TRUE)
