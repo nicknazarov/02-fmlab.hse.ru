@@ -17,13 +17,13 @@ rankingFactor <- 0
 
 #############################################################################
 # Параметры, которые зависят от изучаемой страны
-country_name_eng <- "russia_bonds"
+country_name_eng <- "europe_bonds"
 
 #############################################################################
 # Загрузка 
 
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
-price_d5<- read.csv(file="~/workdir/bonds_long.csv", header=TRUE)
+price_d5<- read.csv(file="~/workdir/europe_bonds.csv",  header=TRUE, sep = ";", dec = ",")
 #/home/nazarov/10-FlyElephant/
 #price_d5<- read.csv(file="/home/nazarov/10-FlyElephant/bonds.csv", header=TRUE)
 
@@ -110,7 +110,7 @@ results <- list(data=temp2, num=N, n_portf = T)  # список ценных о�
 #rankingFactor <- 0
 #country_name_eng <- "russia_bonds"
 #getwd()
-saveRDS(file ="bonds_result_long.RDS",results) # сохраняем всё ценное в файл
+saveRDS(file ="europe_bonds_result.RDS",results) # сохраняем всё ценное в файл
 
 start_time
 end_time
