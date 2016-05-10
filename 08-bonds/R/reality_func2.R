@@ -142,7 +142,7 @@ ret_0 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
           m <- 1 
           while(i < N){
                         temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 0)
-                        cat("\n", names(temp2), "\n")
+                        #cat("\n", names(temp2), "\n")
                         temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
                         
                         if(percent==0.5){
@@ -153,14 +153,14 @@ ret_0 <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
                                        ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
                                           sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
                                        
-                                       tt<- length(temp3)
+                                       #tt<- length(temp3)
                                        
                                       # cat("1 ---- ", ceiling(length(temp3)*percent), "___________" ,
                                       #     ceiling(length(temp3)*(1-percent))," -----",length(temp3), "\n")   
                         }
                         
-                        ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
-                                     sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
+                        #ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent)- 
+                         #            sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
                         
                         #if(m==312){
                         #            print(temp3)

@@ -13,17 +13,27 @@ library(parallel)
 #}
 source("~/workdir/08-bonds/R/reality_func2.R")
 RESULT_PATH <- "~/workdir/"
-rankingFactor <- 0
+#rankingFactor <- 0
 
 #############################################################################
+#### Параметры, получаемые из командной строки
+#############################################################################
+args <- commandArgs(trailingOnly = TRUE)
+
+result_file_name  <- args[1]
+file_name <- args[2]
+rankingFactor <- as.numeric(args[3])
+#############################################################################
 # Параметры, которые зависят от изучаемой страны
-country_name_eng <- "europe_bonds"
+#country_name_eng <- "europe_bonds"
 
 #############################################################################
 # Загрузка 
 
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
-price_d5<- read.csv(file="~/workdir/europe_bonds.csv",  header=TRUE, sep = ";", dec = ",")
+#price_d5<- read.csv(file="~/workdir/europe_bonds.csv",  header=TRUE, sep = ";", dec = ",")
+price_d5<- read.csv(file=paste0("~/workdir/",file_name),  header=TRUE, sep = ";", dec = ",")
+
 #/home/nazarov/10-FlyElephant/
 #price_d5<- read.csv(file="/home/nazarov/10-FlyElephant/bonds.csv", header=TRUE)
 
@@ -110,7 +120,7 @@ results <- list(data=temp2, num=N, n_portf = T)  # список ценных о�
 #rankingFactor <- 0
 #country_name_eng <- "russia_bonds"
 #getwd()
-saveRDS(file ="europe_bonds_result.RDS",results) # сохраняем всё ценное в файл
+saveRDS(file =result_file_name, results) # сохраняем всё ценное в файл
 
 start_time
 end_time

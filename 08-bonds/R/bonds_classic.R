@@ -18,18 +18,43 @@ RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/08-bonds/results/"
 rankingFactor <- 0
 
 #############################################################################
+#### Параметры, получаемые из командной строки
+#############################################################################
+args <- commandArgs(trailingOnly = TRUE)
+country_name_eng  <- args[1]
+file_name <- args[2]
+
+#############################################################################
 #### Параметры, которые зависят от изучаемой страны
 #############################################################################
-country_name_eng <- "russia_bonds"
+#country_name_eng <- "russia_bonds"
 
+#############################################################################
+### Выбираем только пятницу
+##############################################################################
+#price_d5<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/08-bonds/data/germany_bonds_daily.csv", header=TRUE, sep = ";",stringsAsFactors=FALSE, dec = ",")
+#t <- sub(".", "/", price_d5[,1], fixed = T)
+#t <- sub(".", "/", t, fixed = T)
+#price_d5[,1] <- as.Date(t, format = "%d/%m/%Y" )
+#price_d5$days <- weekdays(price_d5[,1])
+#price_d5 <- price_d5[price_d5$days =="Пятница", ]
+#price_d5$days <- NULL
+#price_d5 <- price_d5[order(price_d5[,1], decreasing = F), ]
+#write.table(price_d5, file="/home/nazarov/02-fmlab.hse.ru/08-bonds/data/germany_bonds.csv", append = FALSE, quote = F, sep = ";",
+#            eol = "\n", na = "NA", dec = ".", row.names = F,
+#            col.names = TRUE, qmethod = c("escape", "double"),
+#            fileEncoding = "")
 #############################################################################
 ### Загрузка 
 #############################################################################
 #price_d5<- readWorksheet(loadWorkbook("data/bonds.xls"),sheet=1)
-price_d5<- read.csv(file="/home/nazarov/02-fmlab.hse.ru/08-bonds/data/bonds.csv", header=TRUE)
+#price_d5<- read.csv(file=paste0("/home/nazarov/02-fmlab.hse.ru/08-bonds/data/",file_name), header=TRUE)
+price_d5<- read.csv(file=paste0("/home/nazarov/02-fmlab.hse.ru/08-bonds/data/",file_name),  header=TRUE, sep = ";", dec = ",")
+
 
 row.names(price_d5) <- price_d5[,1]
 price_d5 <-price_d5[,-1]
+
 #############################################################################
 #### Создаем тестовое множество
 #############################################################################
@@ -90,7 +115,7 @@ for (p3 in low:up) {
         #realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
         #                              mean(return.winner), mean(return.loser),length(temp[temp<0]))    
          realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
-                              length(temp[temp<0]))  
+                              length(temp[temp < 0]))  
         m <- m+1      
       }
     }
@@ -111,21 +136,21 @@ colnames(temp2) <-c("mean","t","p-value","hist_per","moment_per","invest_per","p
 #############################################################################
 #### Вектор доходностей для тестового множества 
 #############################################################################
-percent <- 0.3
-p1_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 4]/4 
-p2_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 5] 
-p3_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 6]/4
+#percent <- 0.3
+#p1_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 4]/4 
+#p2_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 5] 
+#p3_sharp <- temp2 [order(temp2[,2], decreasing = TRUE), 6]/4
 
-out_of_sample_ret <- returnWrapper(p1_sharp[1], p2_sharp[1], p3_sharp[1],  ceiling(for_test[[2]]), N_test, for_test[[1]], UP1, UP2, percent,3) 
-tttt<- data.frame(out_of_sample_ret) 
-hist(out_of_sample_ret)
-mean(out_of_sample_ret)/p3_sharp[1]
+#out_of_sample_ret <- returnWrapper(p1_sharp[1], p2_sharp[1], p3_sharp[1],  ceiling(for_test[[2]]), N_test, for_test[[1]], UP1, UP2, percent,3) 
+#tttt<- data.frame(out_of_sample_ret) 
+#hist(out_of_sample_ret)
+#mean(out_of_sample_ret)/p3_sharp[1]
 #Сохранение результатов
-if(per_learn!=1){
-  results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test, out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
-}else{
+#if(per_learn!=1){
+#  results <- list(data=temp2, num=N, n_portf = T, for_test_data_rowNumber =for_test, out_of_sample_ret  = out_of_sample_ret  )  # список ценных объектов
+#}else{
   results <- list(data=temp2, num=N, n_portf = T)  # список ценных объектов
-}
+#}
 
 #saveRDS(file = paste(RESULT_PATH ,"result_",per_learn, "_",country_name_eng,"_f",rankingFactor,"_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
 saveRDS(file = paste(RESULT_PATH ,"result_", "_",country_name_eng,"_f",rankingFactor,"_",Sys.time() ,".RDS",sep=""),results) # сохраняем всё ценное в файл
@@ -137,39 +162,37 @@ end_time
 ###############################################################################
 # FOR TEST
 ###############################################################################
-12  1	24
-12  0	24
+#12  1	24
+#12  0	24
 
-out_of_sample_ret 
+#out_of_sample_ret 
 
-i_start <- ceiling(for_test[[2]])
-tttt2 <- for_test[[1]]  
+#i_start <- ceiling(for_test[[2]])
+#tttt2 <- for_test[[1]]  
 
-source("R/reality_func2.R")
-temp_for_T <-  returnWrapper(3, 0, 6, STEP, N, price_d5, UP1, UP2, 0.3, 1) 
+#source("R/reality_func2.R")
+#temp_for_T <-  returnWrapper(3, 0, 6, STEP, N, price_d5, UP1, UP2, 0.3, 1) 
 
-names(temp_for_T) <- NULL
-str(temp_for_T )
-sum (temp_for_T )
-is.na(temp_for_T)
+#names(temp_for_T) <- NULL
+#str(temp_for_T )
+#sum (temp_for_T )
+#is.na(temp_for_T)
 
-for(i in 1:length(temp_for_T)){
-  if(is.nan(temp_for_T [i])) print(i)
-}
+#for(i in 1:length(temp_for_T)){
+#  if(is.nan(temp_for_T [i])) print(i)
+#}
 
-source("R/reality_func2.R")
-temp_for_T <-  returnWrapper(10, 8, 11, i_start, N_test, for_test[[1]] , UP1, UP2, 0.3, 3) 
-mean(temp_for_T)/11
+#source("R/reality_func2.R")
+#temp_for_T <-  returnWrapper(10, 8, 11, i_start, N_test, for_test[[1]] , UP1, UP2, 0.3, 3) 
+#mean(temp_for_T)/11
 
-source("R/reality_func2.R")
-tttt <- as.data.frame( returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
+#source("R/reality_func2.R")
+#tttt <- as.data.frame( returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
 
-mean(returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
-min (returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
-sum(returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0)<0)
+#mean(returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
+#min (returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0))
+#sum(returnWrapper (11, 0, 2, 1, nrow(price_d5) - 8, price_d5, UP1, UP2, 0.1, 0)<0)
 
-source("R/reality_func3.R")
-as.data.frame(ret_with_date (4, 1, 1, 1, N, price_d5, UP1, UP2, 0.1)) 
+#source("R/reality_func3.R")
+#as.data.frame(ret_with_date (4, 1, 1, 1, N, price_d5, UP1, UP2, 0.1)) 
 
-
-(1 + 0.16)^6
