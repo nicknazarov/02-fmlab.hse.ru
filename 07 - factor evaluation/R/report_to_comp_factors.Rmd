@@ -17,12 +17,14 @@ rm(list=ls())
 library(pander)
 library(DT)
 panderOptions('table.split.table', Inf) 
-source("reality_func2.R")
+#source("reality_func2.R")
 library(XLConnect)
 library(ggplot2)
 library(scales)
-RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
-DATA_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/data/"
+#RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
+#DATA_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/data/"
+RESULT_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/"
+DATA_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/data/"
 n.graph <- 0
 n.table <- 0
 STEP=1
@@ -43,7 +45,7 @@ UP3=12
 
 >Период инвестирования менялся от  **`r 1`** месяца до  **`r 12`**
 
->Рассматривалась 1 процентиль   **`r 0.3`** 
+>Рассматривалось 5 процентилей  **`r 0.5`**,  **`r 0.4`** ,  **`r 0.3`**,  **`r 0.2`**  ,  **`r 0.1`**    
 <p>
 <br />
 </p>  >  
@@ -64,8 +66,13 @@ resultDataFull <-resultDataFull[,-1]
 
 ```{r, echo=FALSE, results='asis'}
 #mylist <- readRDS("russia_zero_v1.RDS") # читаем из файла что там есть 
-table_factor_0 <- readRDS(paste(RESULT_PATH, "result_out_of_sample_learn_1_russia_f0_2016-04-05 18:55:34.RDS", sep="")) # читаем из файла что там есть 
-table_factor_1 <- readRDS(paste(RESULT_PATH, "result_out_of_sample_learn_1_russia_f1_2016-04-05 18:36:55.RDS", sep="")) # читаем из файла что там есть 
+#table_factor_0 <- readRDS(paste(RESULT_PATH, "result_out_of_sample_learn_1_russia_f0_2016-04-05 18:55:34.RDS", sep="")) # читаем из файла что там есть 
+
+
+#table_factor_1 <- readRDS(paste(RESULT_PATH, "result_out_of_sample_learn_1_russia_f1_2016-04-05 18:36:55.RDS", sep="")) # читаем из файла что там есть 
+
+table_factor_0 <- readRDS(paste(RESULT_PATH, "russia_stocks_result_f0.RDS", sep=""))
+table_factor_1 <- readRDS(paste(RESULT_PATH, "russia_stocks_result_f1.RDS", sep=""))
 
 result.data_0 <- table_factor_0 [[1]]
 result.data_1 <- table_factor_1 [[1]]

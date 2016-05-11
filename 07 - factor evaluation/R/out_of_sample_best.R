@@ -235,3 +235,21 @@ for(i in 1:length(temp_for_T)){
 source("R/reality_func2.R")
 temp_for_T <-  returnWrapper(10, 8, 11, i_start, N_test, for_test[[1]] , UP1, UP2, 0.3, 3) 
 mean(temp_for_T)/11
+
+
+library(xlsx)
+
+dt0 <- readRDS("/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/russia_stocks_result_f0.RDS") # читаем из файла что там есть 
+dt1 <- readRDS("/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/russia_stocks_result_f1.RDS") # читаем из файла что там есть 
+
+
+write.xlsx(dt0[[1]], 
+           "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/result_table_11_05_2016_.xls", sheetName="filter_0")
+
+
+write.xlsx(dt1[[1]], 
+           "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/result_table_11_05_2016.xls", sheetName="filter_2")
+
+
+
+
