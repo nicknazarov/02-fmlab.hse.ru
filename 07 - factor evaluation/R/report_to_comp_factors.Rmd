@@ -1,5 +1,5 @@
 ---
-title: "Отчет по России - сравнение обычного отбора акций с двойным фильтром  (данные с нулями)"
+title: "Отчет по России - сравнение обычного отбора акций с двойным фильтром  (данные с нулями) (13.05.2016)"
 output:
   html_document:
       pandoc_args: [
@@ -21,10 +21,10 @@ panderOptions('table.split.table', Inf)
 library(XLConnect)
 library(ggplot2)
 library(scales)
-#RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
-#DATA_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/data/"
-RESULT_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/"
-DATA_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/data/"
+RESULT_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/results/"
+DATA_PATH <- "/home/nazarov/02-fmlab.hse.ru/07 - factor evaluation/data/"
+#RESULT_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/results/"
+#DATA_PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/07 - factor evaluation/data/"
 n.graph <- 0
 n.table <- 0
 STEP=1
