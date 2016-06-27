@@ -15,6 +15,14 @@ returnWrapper <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent, flag){
                   i_start <- STEP
                   return (ret_3(p1, p2, p3, i_start , N, d2, UP1, UP2, percent))
                 }
+  if(flag==4){
+    i_start <- STEP
+    return (ret_win(p1, p2, p3, i_start , N, d2, UP1, UP2, percent))
+  }
+  if(flag==5){
+    i_start <- STEP
+    return (ret_los(p1, p2, p3, i_start , N, d2, UP1, UP2, percent))
+  }
 
 }
 
@@ -283,5 +291,54 @@ ret_3 <- function (p1, p2, p3, i_start, N, d2, UP1, UP2, percent)
 
 
 
+ret_win <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+  #средняя месячная доходность - классическая схема
+  ans <- c() 
+  i <- UP1*4+2+UP2
+  m <- 1 
+  while(i < N){
+    temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 0)
+    #cat("\n", names(temp2), "\n")
+    temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+    
+    if(percent==0.5){
+      ans[m] <- (sum(temp3[1:floor(length(temp3)*percent)] )/ floor(length(temp3)*percent))/p3
+    }
+    else{
+      ans[m] <- (sum(temp3[1:ceiling(length(temp3)*percent)])/ceiling(length(temp3)*percent))/p3
+      
 
+    }
+    
+    names(ans)[m] <- row.names(d2)[i]    
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(ans)
+}
 
+ret_los <- function (p1, p2, p3, STEP, N, d2, UP1, UP2, percent)
+{
+  #средняя месячная доходность - классическая схема
+  ans <- c() 
+  i <- UP1*4+2+UP2
+  m <- 1 
+  while(i < N){
+    temp2 <- rankingFactorWrapper(p1, p2, p3, STEP, N, d2, i, 0)
+    #cat("\n", names(temp2), "\n")
+    temp3 <- (as.numeric(temp2[i+p3*4,])- as.numeric(temp2[i,]))/as.numeric(temp2[i,])
+    
+    if(percent==0.5){
+      ans[m] <- (sum(temp3[(floor(length(temp3)*percent)+1):(length(temp3))]) /(length(temp3)-floor(length(temp3)*percent)))/p3
+    }
+    else{
+      ans[m] <- (sum(temp3[ceiling(length(temp3)*(1-percent)):(length(temp3))]) /ceiling(length(temp3)*percent))/p3
+    }
+    
+    names(ans)[m] <- row.names(d2)[i]    
+    m <- m+1
+    i<-STEP+i  
+  }   
+  return(ans)
+}
