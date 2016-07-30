@@ -1,0 +1,96 @@
+---
+title: " Бонды по России ликвидные (без Русснефти) - победители (14.07.2016)"
+output:
+  html_document:
+      pandoc_args: [
+      "+RTS", "-K64m",
+      "-RTS"
+    ]
+lang: russian
+---
+
+
+```{r, include=FALSE}
+rm(list=ls()) 
+#setwd("/home/nazarov/02-fmlab.hse.ru/08 - bonds/")
+#setwd("I:/12 - ЛАФР/05 - reverse/")
+library(pander)
+library(DT)
+panderOptions('table.split.table', Inf) 
+#source("/home/nick/01-projects/02-fmlab.hse.ru/08 - bonds/R/reality_func3.R")
+library(XLConnect)
+library(ggplot2)
+library(scales)
+#source("I:\12 - ЛАФР\05 - reverse\R\reality_func2.R")
+n.graph <- 0
+n.table <- 0
+
+#PATH <- "/home/nazarov/02-fmlab.hse.ru/"
+PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/09-russia_bonds/"
+#PATH <- "/home/nick/01-projects/02-fmlab.hse.ru/08-bonds/"
+source(paste0(PATH, "R/reality_func3.R"))
+#############################################################################
+# Константы
+# перебор от 1 до 12 мес , ждем от 0 до 8 недель, держим от 1 до 24 мес
+# таким образом  последние 25 месяцев понадобятся только для одной модели
+# Шаг для подсчета разниц в группах победителей и проигравших
+STEP=1
+# Периоды отбора (в месяцах), удержания (в неделях), инвестирования (в месяцах)
+UP1=12
+UP2=8
+UP3=12
+###########################################################################################
+```
+ <p>
+ <br />
+ </p>  
+ 
+>Период отслеживания менялся от  **`r 1`** месяца до  **`r 12`**
+
+>Период ожидания менялся от  **`r 0`**  до  **`r 8`** недель
+
+>Период инвестирования менялся от  **`r 1`** месяца до  **`r 12`**
+
+>Рассматривалось 5 процентилей  **`r 0.5`**,  **`r 0.4`** ,  **`r 0.3`**,  **`r 0.2`**  ,  **`r 0.1`**     
+ <p>
+ <br />
+ </p>  
+
+## _____________________________Bonds_Russia________________________
+```{r, include=FALSE}
+# Загружаем ранее сохраненные цены закрытия
+#resultDataFull<- XLConnect::readWorksheet(XLConnect::loadWorkbook(paste(PATH, "08 - #bonds/data/bonds.xls",sep = "")), sheet=1)
+resultDataFull <-  read.csv(file=paste0(PATH,"R/bonds-1.csv"), header=TRUE)
+row.names(resultDataFull) <- resultDataFull[,1]
+resultDataFull <-resultDataFull[,-1]
+N <- (nrow(resultDataFull)-(2+UP3*4))%/%STEP 
+
+mylist <- readRDS(paste(PATH, "R/result-1.RDS",sep = "")) # читаем из файла что там есть 
+result.data <- mylist[[1]]
+```   
+>Количество исследумых облигаций -- **`r ncol(resultDataFull)`** 
+
+>Количество портфелей, использованных для подсчета средней доходности -- **`r mylist$n_portf`** 
+
+<p>
+<br />
+</p>  
+>Всего было рассмотрено **`r nrow(result.data)`** стратегий
+
+<p>
+<br />
+</p> 
+```{r, echo=FALSE, results='asis'}
+n.table<-n.table+1
+```
+####**Таблица `r n.table`. Все стратегии ** 
+```{r, echo=FALSE, results='asis'}
+#datatable(round(result.data[,c(1,2,3,4,5,6,7)],6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+datatable(round(result.data,6), filter = 'top',options = list(pageLength = 10, lengthMenu = c( 10, 20, 50, 100, nrow(result.data))) ) 
+```
+
+<p>
+<br /> 
+</p>   
+ 
+
