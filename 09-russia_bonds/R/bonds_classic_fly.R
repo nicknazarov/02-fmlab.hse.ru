@@ -78,17 +78,17 @@ start_time <- Sys.time()
 resultDataFull <- price_d5
 
 print("Параллельное выполнение")
-cl <- makeCluster(getOption("cl.cores", 4)) # создание кластера из четырёх ядер процессора
+cl <- makeCluster(getOption("cl.cores", 2)) # создание кластера из четырёх ядер процессора
 clusterExport(cl,"infert") # передача данных внутрь кластера
 clusterEvalQ(cl,source("~/workdir/08-bonds/R/reality_func2.R")) # загрузка функций в кластер
 #clusterExport(cl, "UP1", "UP2", "UP3", "STEP", "resultDataFull", "N")
 start_time <- Sys.time()
-temp1 <- parLapply(cl,  1:4, function(temp_p3, UP1, UP2, UP3, STEP, resultDataFull, N, rankingFactor) # параллельная версия sapply
+temp1 <- parLapply(cl,  1:2, function(temp_p3, UP1, UP2, UP3, STEP, resultDataFull, N, rankingFactor) # параллельная версия sapply
 {   
 m <- 1  
 realityCheckData <- data.frame(1,1,1,1,1,1,1,1)
-low <- (temp_p3-1)*3+1
-up <- temp_p3*3
+low <- (temp_p3-1)*6+1
+up <- temp_p3*6
 for (p3 in low:up) {  
   for (percent in c(0.1, 0.2, 0.3, 0.4, 0.5) ){
     for (p1 in 1:UP1 ){   

@@ -63,6 +63,17 @@ plot(res_min [,2])
 mean(res_min[,3],na.rm = T)
 mean(res_max[,3],na.rm = T)
 
+set.seed(5)
+random_portf <- sample(2:ncol(ret_data),ncol(dat)-1,replace=F)
+
+rnd_crs <- ret_data[,random_portf]
+rnd_crs <- rnd_crs [,order(rnd_crs [1,])]
+rnd_crs <- rnd_crs [-c(1,2,3),1:28]
+rnd_crs$date <- dat$date 
+res_rnd <- ret_result(rnd_crs)
+plot(res_rnd [,2])
+
+
 library(xlsx)
 write.xlsx(res_max, 
            "max_crs.xls", sheetName="crs=1")
@@ -70,6 +81,11 @@ write.xlsx(res_min,
            "worst_crs.xls", sheetName="1")
 write.xlsx(min_crs, 
            "returns_worst_crs.xls", sheetName="1")
+
+write.xlsx(res_rnd, 
+           "random_port_crs.xls", sheetName="1")
+write.xlsx(rnd_crs, 
+           "returns_random_port.xls", sheetName="1")
 
 write.csv(x = res_max, file ="crs_1.csv",quote= F,row.names = F,sep = ";" )
 write.csv(x = res_min, file ="crs_the_worst.csv",quote= F,row.names = F,sep = ";" )

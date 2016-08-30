@@ -95,9 +95,11 @@ for (p3 in low:up) {
       for (p2 in 0:UP2 ){  
         #вектор дельт   
         cat(p1,p2,p3, "/n")
-        temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent, rankingFactor) 
+        
+        
+        #temp <- returnWrapper(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent, rankingFactor) 
         #return.winner<- ret.winner(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
-        #return.loser<- ret.loser(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
+        temp <- ret_los(p1, p2, p3, STEP, N, resultDataFull, UP1, UP2, percent) 
         n <- length(temp)
         #realityCheckData[m, ] <- list(mean(temp),abs(mean(temp))/sd(temp)*sqrt(n), (1-pt(q = abs(mean(temp))/sd(temp)*sqrt(n),df = n-1))*2 ,p1*4, p2, p3*4, percent,
         #                              mean(return.winner), mean(return.loser),length(temp[temp<0]))    
