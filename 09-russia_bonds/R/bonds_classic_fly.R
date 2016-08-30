@@ -11,7 +11,7 @@ library(parallel)
 #    install.packages("XLConnect")
 #    library(XLConnect)
 #}
-source("09-bonds/R/reality_func2.R")
+source("~/workdir/09-russia_bonds/R/reality_func2.R")
 RESULT_PATH <- "~/workdir/"
 #rankingFactor <- 0
 
